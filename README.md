@@ -4,14 +4,14 @@ A Python library for multivariate multinomial data imputation using Expectation-
 
 ## Features
 - Multivariate multinomial imputation.
-- Expectation-Maximization (EM) algorithm.
-- Data Augmentation (DA) algorithm.
-- Support for conjugate priors (Dirichlet).
+    - Expectation-Maximization (EM) algorithm.
+    - Data Augmentation (DA) algorithm.
+- Support for conjugate priors (Dirichlet) and data-dependent priors.
 - High-performance Rust implementation for core counting and distance functions.
 
 ## Installation
 
-- From Github: `git clone ... && uv pip install .` 
+- From Github: `pip install git+https://github.com/alexwhitworth/pyimputeMulti.git`
 - From PyPI: (coming soon)
 
 ## Usage
@@ -22,10 +22,12 @@ from imputemulti import multinomial_impute, load_tract2221
 df = load_tract2221()
 
 # Perform imputation
-result = multinomial_impute(df, method="EM", conj_prior="none")
+em_result = multinomial_impute(df, method="EM", conj_prior="none")
+da_result = multinomial_impute(df, method="DA", conj_prior="none")
 
 # Access imputed data
-imputed_df = result.data[1]
+em_imputed_df = em_result.data[1]
+da_imputed_df = da_result.data[1]
 ```
 
 
