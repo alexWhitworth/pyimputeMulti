@@ -10,6 +10,10 @@ def multinomial_stats(dat: pd.DataFrame,
                       output: Literal["x_y", "z_Os_y", "possible.obs"]) -> pd.DataFrame:
     """
     Calculate observed-data sufficient statistics or enumerate possible patterns.
+
+        - "x_y": Sufficient statistics for complete cases (x_y).
+        - "z_Os_y": Sufficient statistics for marginally missing cases (z_Os_y).
+        - "possible.obs": Enumeration of all possible complete patterns (enum_comp).
     """
     if output != "z_Os_y":
         levels = get_levels(dat)
@@ -39,6 +43,20 @@ def multinomial_em(x_y: pd.DataFrame, z_Os_y: pd.DataFrame, enum_comp: pd.DataFr
                    verbose: bool = False) -> ModImputeMultiResult:
     """
     EM algorithm for multivariate multinomial data.
+
+    Args:
+        x_y: DataFrame with counts of complete cases.
+        z_Os_y: DataFrame with counts of marginally missing cases.
+        enum_comp: DataFrame enumerating all complete patterns.
+        n_obs: Total number of observations in the original data.
+        conj_prior: Type of conjugate prior to use.
+        alpha: Hyperparameters for the conjugate prior.
+        tol: Tolerance for convergence.
+        max_iter: Maximum number of iterations.
+        verbose: Whether to print iteration details.
+
+    Returns:
+        ModImputeMultiResult containing the results of the EM algorithm.
     """
     # 01. Setup prior and initial theta_y
     enum_comp = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'), 
@@ -145,6 +163,20 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_Os_y: pd.DataFrame, enum_comp: pd.
                          verbose: bool = False) -> ModImputeMultiResult:
     """
     Data Augmentation algorithm for multivariate multinomial data.
+
+    Args:
+        x_y: DataFrame with counts of complete cases.
+        z_Os_y: DataFrame with counts of marginally missing cases.
+        enum_comp: DataFrame enumerating all complete patterns.
+        n_obs: Total number of observations in the original data.
+        conj_prior: Type of conjugate prior to use.
+        alpha: Hyperparameters for the conjugate prior.
+        burnin: Number of burn-in iterations.
+        post_draws: Number of posterior draws.
+        verbose: Whether to print iteration details.
+
+    Returns:
+        ModImputeMultiResult containing the results of the data augmentation algorithm.
     """
     enum_comp = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'), 
                             conj_prior=conj_prior, alpha=alpha, verbose=verbose,
@@ -225,6 +257,17 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
                        **kwargs) -> ImputeMultiResult:
     """
     Main function to impute missing values for multivariate multinomial data.
+
+    Args:
+        dat: Input DataFrame with categorical columns and missing values.
+        method: Imputation method to use ("EM" or "DA").
+        conj_prior: Type of conjugate prior to use.
+        alpha: Hyperparameters for the conjugate prior.
+        verbose: Whether to print iteration details.
+        **kwargs: Additional arguments for the EM or DA functions (e.g., tol, max_iter, burnin, post_draws).
+
+    Returns:
+        ImputeMultiResult containing the results of the imputation.
     """
     cat_cols = list(dat.columns)
     levels_with_na = {col: list(dat[col].astype('category').cat.categories) + [np.nan] 
