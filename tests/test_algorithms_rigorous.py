@@ -60,6 +60,7 @@ def test_multinomial_da_synthetic():
     Test DA on the same synthetic case. 
     Results should be close to EM MLE with enough draws.
     """
+    np.random.seed(42)  # Set seed for stability
     df = pd.DataFrame({
         'A': pd.Series([0]*40 + [1]*40 + [0]*20, dtype='category'),
         'B': pd.Series([0]*40 + [1]*40 + [np.nan]*20, dtype='category')
@@ -73,7 +74,7 @@ def test_multinomial_da_synthetic():
     
     # Use many draws for stability
     res = multinomial_data_aug(x_y, z_Os_y, enum_comp, n_obs, 
-                               conj_prior="none", burnin=50, post_draws=500)
+                               conj_prior="none", burnin=100, post_draws=1000)
     
     mle = res.mle_x_y
     theta_00 = mle.loc[(mle['A'] == 0) & (mle['B'] == 0), 'theta_y'].iloc[0]

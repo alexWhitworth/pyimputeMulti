@@ -132,3 +132,88 @@ fn _internal_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(mx_my_compare_rust, m)?)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ndarray::array;
+
+    #[test]
+    fn test_sup_dist_c() {
+        // x and y are passed as array references in Rust tests
+        let x = array![1.0f64, 2.0, 3.0];
+        let y = array![1.1f64, 1.9, 3.5];
+        
+        let mut sup: f64 = -1.0;
+        for (xi, yi) in x.iter().zip(y.iter()) {
+            let diff = (xi - yi).abs();
+            if diff > sup {
+                sup = diff;
+            }
+        }
+        assert!((sup - 0.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn test_mx_my_compare_logic() {
+        let na_val = i32::MIN;
+        let x = array![[1, na_val], [3, 4]];
+        let y = array![[1, 2], [3, 4], [1, 5]];
+        
+        // Row 0 of x: [1, NA] matches [1, 2] and [1, 5]
+        // Row 1 of x: [3, 4] matches [3, 4]
+        
+        let mut out = vec![Vec::new(); x.nrows()];
+        for (i, row_x) in x.rows().into_iter().enumerate() {
+            for (j, row_y) in y.rows().into_iter().enumerate() {
+                let mut matched = true;
+                for (v_x, v_y) in row_x.iter().zip(row_y.iter()) {
+                    if *v_x != na_val && *v_y != na_val {
+                        if v_x != v_y {
+                            matched = false;
+                            break;
+                        }
+                    } else if *v_x != na_val && *v_y == na_val {
+                        matched = false;
+                        break;
+                    }
+                }
+                if matched {
+                    out[i].push(j);
+                }
+            }
+        }
+        
+        assert_eq!(out[0], vec![0, 2]);
+        assert_eq!(out[1], vec![1]);
+    }
+
+    #[test]
+    fn test_count_compare_logic() {
+        let na_val = i32::MIN;
+        let x = array![[1, 2], [3, 4]];
+        let dat = array![[1, na_val], [3, 4], [na_val, 2]];
+        
+        let nr_x = x.nrows();
+        let mut counts = vec![0; nr_x];
+
+        // logic for count.obs
+        for row_dat in dat.rows() {
+            for (i, row_x) in x.rows().into_iter().enumerate() {
+                let mut matched = true;
+                for (v_x, v_dat) in row_x.iter().zip(row_dat.iter()) {
+                    if *v_dat != na_val && v_x != v_dat {
+                        matched = false;
+                        break;
+                    }
+                }
+                if matched {
+                    counts[i] += 1;
+                    break;
+                }
+            }
+        }
+        
+        assert_eq!(counts, vec![2, 1]);
+    }
+}

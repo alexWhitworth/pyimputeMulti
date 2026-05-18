@@ -12,6 +12,10 @@ def test_count_compare_rust_no_na():
     x = np.array([[1, 2], [3, 4]], dtype=np.int32)
     dat = np.array([[1, 2], [1, 2], [3, 4]], dtype=np.int32)
     counts = count_compare_rust(x, dat, "no")
+    
+    assert isinstance(counts, np.ndarray)
+    assert counts.shape == (2,)
+    assert counts.dtype == np.int32
     np.testing.assert_array_equal(counts, [2, 1])
 
 def test_count_compare_rust_count_obs():
@@ -23,14 +27,27 @@ def test_count_compare_rust_count_obs():
     # [3, 4] matches [3, 4]
     # [NA, 2] matches [1, 2]
     counts = count_compare_rust(x, dat, "count.obs")
+    
+    assert isinstance(counts, np.ndarray)
+    assert counts.shape == (2,)
+    assert counts.dtype == np.int32
     np.testing.assert_array_equal(counts, [2, 1])
 
 def test_mx_my_compare_rust():
     NA = np.int32(-2147483648)
     mat_x = np.array([[1, NA], [3, 4]], dtype=np.int32)
-    mat_y = np.array([[1, 2], [3, 4]], dtype=np.int32)
-    # Row 0 of mat_x: [1, NA] matches row 0 of mat_y: [1, 2]
-    # Row 1 of mat_x: [3, 4] matches row 1 of mat_y: [3, 4]
+    mat_y = np.array([[1, 2], [3, 4], [1, 5]], dtype=np.int32)
+    # Row 0 of mat_x: [1, NA] matches row 0 and 2 of mat_y
+    # Row 1 of mat_x: [3, 4] matches row 1 of mat_y
     matches = mx_my_compare_rust(mat_x, mat_y)
+    
+    # Assert type and structure
+    assert isinstance(matches, list)
+    assert len(matches) == len(mat_x)
+    for row in matches:
+        assert isinstance(row, list)
+        for idx in row:
+            assert isinstance(idx, int)
+            
     # 0-based indexing
-    assert matches == [[0], [1]]
+    assert matches == [[0, 2], [1]]

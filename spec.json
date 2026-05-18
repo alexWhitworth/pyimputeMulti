@@ -210,18 +210,18 @@
     {
       "id": "API-003",
       "name": "mx_my_compare_rust",
-      "description": "Compares rows of two matrices to find inclusion relationships.",
+      "description": "Compares rows of observed data matrix (x) to a complete pattern matrix (y) to find possible completions.",
       "layer": "ffi_boundary",
       "pure": true,
       "inputs": [
         {
-          "name": "dt_x",
+          "name": "mat_x",
           "type_python": "np.ndarray (2D, int32)",
           "type_rust": "PyReadonlyArray2<i32>",
           "required": true
         },
         {
-          "name": "dt_y",
+          "name": "mat_y",
           "type_python": "np.ndarray (2D, int32)",
           "type_rust": "PyReadonlyArray2<i32>",
           "required": true
@@ -235,7 +235,7 @@
         }
       ],
       "raises": [],
-      "ffi_notes": "Used for mapping observed patterns to possible complete patterns."
+      "ffi_notes": "Used for mapping observed patterns (potentially with NAs) to possible complete patterns. Output list length equals mat_x row count."
     }
   ],
   "features": [
