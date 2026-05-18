@@ -1,6 +1,6 @@
 {
-  "spec_version": "1.1.0",
-  "generated_at": "2026-05-18T10:15:00Z",
+  "spec_version": "1.2.0",
+  "generated_at": "2026-05-18T11:00:00Z",
   "project": {
     "name": "imputemulti",
     "description": "Migration of the R imputeMulti package to Python/Rust",
@@ -29,7 +29,8 @@
       "rand",
       "pyo3",
       "maturin",
-      "plotnine"
+      "plotnine",
+      "pytest-cov"
     ],
     "graphics": "plotnine"
   },
@@ -462,6 +463,43 @@
           "required": true
         }
       ]
+    },
+    {
+      "id": "F-501",
+      "name": "Code Coverage and CI Integration",
+      "description": "Establish automated testing and coverage reporting using GitHub Actions and Codecov.",
+      "phase": 5,
+      "priority": 6,
+      "status": "pending",
+      "layer": "python",
+      "dependencies": ["F-401"],
+      "linked_schemas": [],
+      "linked_apis": [],
+      "performance_requirements": {
+        "complexity_budget": null,
+        "max_latency_ms": null,
+        "max_memory_mb": null,
+        "benchmark_dataset_size": null,
+        "notes": null
+      },
+      "mutation_testing": {
+        "python": { "enabled": false, "rationale_if_disabled": "Infrastructure and CI configuration." },
+        "rust": { "enabled": false, "rationale_if_disabled": "Infrastructure and CI configuration." }
+      },
+      "acceptance_criteria": [
+        "pyproject.toml includes standardized coverage configuration.",
+        "GitHub Actions workflow runs tests on every push to master and PR.",
+        "Coverage report (coverage.xml) is successfully uploaded to Codecov.",
+        "CI fails if total coverage falls below 80%."
+      ],
+      "test_requirements": [
+        {
+          "description": "Verify CI workflow execution and status reporting",
+          "type": "integration",
+          "layer": "python",
+          "required": true
+        }
+      ]
     }
   ],
   "risks": [
@@ -518,6 +556,12 @@
       "name": "Testing and Validation",
       "description": "Full validation suite and benchmarking.",
       "feature_ids": ["F-401"]
+    },
+    {
+      "phase": 5,
+      "name": "CI and Coverage",
+      "description": "Automated testing and coverage reporting integration.",
+      "feature_ids": ["F-501"]
     }
   ]
 }
