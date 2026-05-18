@@ -29,10 +29,8 @@ def test_mx_my_compare_rust():
     NA = np.int32(-2147483648)
     mat_x = np.array([[1, NA], [3, 4]], dtype=np.int32)
     mat_y = np.array([[1, 2], [3, 4]], dtype=np.int32)
-    # Row 0 of mat_y: [1, 2]. 
-    # Matches row 0 of mat_x: [1, NA] (since non-NA values match)
-    # Row 1 of mat_y: [3, 4].
-    # Matches row 1 of mat_x: [3, 4]
+    # Row 0 of mat_x: [1, NA] matches row 0 of mat_y: [1, 2]
+    # Row 1 of mat_x: [3, 4] matches row 1 of mat_y: [3, 4]
     matches = mx_my_compare_rust(mat_x, mat_y)
-    # 1-based indexing
-    assert matches == [[1], [2]]
+    # 0-based indexing
+    assert matches == [[0], [1]]

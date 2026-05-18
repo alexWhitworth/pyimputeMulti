@@ -93,26 +93,30 @@ pub fn mx_my_compare_rust(
 ) -> PyResult<Vec<Vec<usize>>> {
     let x_arr = mat_x.as_array();
     let y_arr = mat_y.as_array();
-    let nrow_y = y_arr.nrows();
-    let _nrow_x = x_arr.nrows();
+    let nrow_x = x_arr.nrows();
     let na_val = i32::MIN;
 
-    let mut out = vec![Vec::new(); nrow_y];
+    let mut out = vec![Vec::new(); nrow_x];
 
-    for (ci, row_y) in y_arr.rows().into_iter().enumerate() {
-        for (mj, row_x) in x_arr.rows().into_iter().enumerate() {
+    for (i, row_x) in x_arr.rows().into_iter().enumerate() {
+        for (j, row_y) in y_arr.rows().into_iter().enumerate() {
             let mut matched = true;
-            for (v_y, v_x) in row_y.iter().zip(row_x.iter()) {
-                if *v_y != na_val && *v_x != na_val {
-                    if v_y != v_x {
+            for (v_x, v_y) in row_x.iter().zip(row_y.iter()) {
+                if *v_x != na_val && *v_y != na_val {
+                    if v_x != v_y {
                         matched = false;
                         break;
                     }
+                } else if *v_x != na_val && *v_y == na_val {
+                    // This case shouldn't happen for enum_comp, but for completeness:
+                    // If row_x has a value but row_y is missing, it's NOT a completion.
+                    matched = false;
+                    break;
                 }
+                // If v_x is NA, it matches any v_y.
             }
             if matched {
-                // Using 0-based indexing for Python compatibility
-                out[ci].push(mj);
+                out[i].push(j);
             }
         }
     }
