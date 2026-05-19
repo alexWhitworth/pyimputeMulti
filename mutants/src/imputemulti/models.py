@@ -1,22 +1,21 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Optional, List, Any
-import pandas as pd
 from typing import Annotated
-from typing import Callable
-from typing import ClassVar
+
+import pandas as pd
 
 MutantDict = Annotated[dict[str, Callable], "Mutant"] # type: ignore
 
 
 def _mutmut_trampoline(orig, mutants, call_args, call_kwargs, self_arg = None): # type: ignore
     """Forward call to original or mutated function, depending on the environment"""
-    import os # type: ignore
+    import os  # type: ignore
     mutant_under_test = os.environ['MUTANT_UNDER_TEST'] # type: ignore
     if mutant_under_test == 'fail': # type: ignore
-        from mutmut.__main__ import MutmutProgrammaticFailException # type: ignore
+        from mutmut.__main__ import MutmutProgrammaticFailException  # type: ignore
         raise MutmutProgrammaticFailException('Failed programmatically')       # type: ignore
     elif mutant_under_test == 'stats': # type: ignore
-        from mutmut.__main__ import record_trampoline_hit # type: ignore
+        from mutmut.__main__ import record_trampoline_hit  # type: ignore
         record_trampoline_hit(orig.__module__ + '.' + orig.__name__) # type: ignore
         # (for class methods, orig is bound and thus does not need the explicit self argument)
         result = orig(*call_args, **call_kwargs) # type: ignore
@@ -51,5 +50,5 @@ class ImputeMultiResult(ModImputeMultiResult):
     Represents the outcome of a full imputation, including imputed data.
     """
     Gcall: str
-    data: List[pd.DataFrame]
+    data: list[pd.DataFrame]
     nmiss: int

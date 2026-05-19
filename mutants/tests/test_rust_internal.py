@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
-from imputemulti._internal_rust import sup_dist_c_rust, count_compare_rust, mx_my_compare_rust
+from imputemulti._internal_rust import count_compare_rust, mx_my_compare_rust, sup_dist_c_rust
+
 
 def test_sup_dist_c_rust():
     x = np.array([1.0, 2.0, 3.0], dtype=np.float64)
@@ -12,7 +13,7 @@ def test_count_compare_rust_no_na():
     x = np.array([[1, 2], [3, 4]], dtype=np.int32)
     dat = np.array([[1, 2], [1, 2], [3, 4]], dtype=np.int32)
     counts = count_compare_rust(x, dat, "no")
-    
+
     assert isinstance(counts, np.ndarray)
     assert counts.shape == (2,)
     assert counts.dtype == np.int32
@@ -27,7 +28,7 @@ def test_count_compare_rust_count_obs():
     # [3, 4] matches [3, 4]
     # [NA, 2] matches [1, 2]
     counts = count_compare_rust(x, dat, "count.obs")
-    
+
     assert isinstance(counts, np.ndarray)
     assert counts.shape == (2,)
     assert counts.dtype == np.int32
@@ -40,7 +41,7 @@ def test_mx_my_compare_rust():
     # Row 0 of mat_x: [1, NA] matches row 0 and 2 of mat_y
     # Row 1 of mat_x: [3, 4] matches row 1 of mat_y
     matches = mx_my_compare_rust(mat_x, mat_y)
-    
+
     # Assert type and structure
     assert isinstance(matches, list)
     assert len(matches) == len(mat_x)
@@ -48,6 +49,6 @@ def test_mx_my_compare_rust():
         assert isinstance(row, list)
         for idx in row:
             assert isinstance(idx, int)
-            
+
     # 0-based indexing
     assert matches == [[0, 2], [1]]

@@ -1,21 +1,21 @@
-import pandas as pd
+from collections.abc import Callable
 from importlib import resources
-from typing import Annotated
-from typing import Callable
-from typing import ClassVar
+from typing import Annotated, ClassVar
+
+import pandas as pd
 
 MutantDict = Annotated[dict[str, Callable], "Mutant"] # type: ignore
 
 
 def _mutmut_trampoline(orig, mutants, call_args, call_kwargs, self_arg = None): # type: ignore
     """Forward call to original or mutated function, depending on the environment"""
-    import os # type: ignore
+    import os  # type: ignore
     mutant_under_test = os.environ['MUTANT_UNDER_TEST'] # type: ignore
     if mutant_under_test == 'fail': # type: ignore
-        from mutmut.__main__ import MutmutProgrammaticFailException # type: ignore
+        from mutmut.__main__ import MutmutProgrammaticFailException  # type: ignore
         raise MutmutProgrammaticFailException('Failed programmatically')       # type: ignore
     elif mutant_under_test == 'stats': # type: ignore
-        from mutmut.__main__ import record_trampoline_hit # type: ignore
+        from mutmut.__main__ import record_trampoline_hit  # type: ignore
         record_trampoline_hit(orig.__module__ + '.' + orig.__name__) # type: ignore
         # (for class methods, orig is bound and thus does not need the explicit self argument)
         result = orig(*call_args, **call_kwargs) # type: ignore
@@ -40,7 +40,7 @@ def load_tract2221() -> pd.DataFrame:
 def x_load_tract2221__mutmut_orig() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -50,7 +50,7 @@ def x_load_tract2221__mutmut_orig() -> pd.DataFrame:
 def x_load_tract2221__mutmut_1() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -60,7 +60,7 @@ def x_load_tract2221__mutmut_1() -> pd.DataFrame:
 def x_load_tract2221__mutmut_2() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -70,7 +70,7 @@ def x_load_tract2221__mutmut_2() -> pd.DataFrame:
 def x_load_tract2221__mutmut_3() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -80,7 +80,7 @@ def x_load_tract2221__mutmut_3() -> pd.DataFrame:
 def x_load_tract2221__mutmut_4() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -90,7 +90,7 @@ def x_load_tract2221__mutmut_4() -> pd.DataFrame:
 def x_load_tract2221__mutmut_5() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -100,7 +100,7 @@ def x_load_tract2221__mutmut_5() -> pd.DataFrame:
 def x_load_tract2221__mutmut_6() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -110,7 +110,7 @@ def x_load_tract2221__mutmut_6() -> pd.DataFrame:
 def x_load_tract2221__mutmut_7() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
@@ -120,21 +120,21 @@ def x_load_tract2221__mutmut_7() -> pd.DataFrame:
 def x_load_tract2221__mutmut_8() -> pd.DataFrame:
     """
     Load the tract2221 dataset.
-    
+
     Returns:
         pd.DataFrame: The tract2221 dataset.
     """
-    path = resources.files("imputemulti.data").joinpath("tract2221.parquet")
+    resources.files("imputemulti.data").joinpath("tract2221.parquet")
     return pd.read_parquet(None)
 
 x_load_tract2221__mutmut_mutants : ClassVar[MutantDict] = { # type: ignore
-'x_load_tract2221__mutmut_1': x_load_tract2221__mutmut_1, 
-    'x_load_tract2221__mutmut_2': x_load_tract2221__mutmut_2, 
-    'x_load_tract2221__mutmut_3': x_load_tract2221__mutmut_3, 
-    'x_load_tract2221__mutmut_4': x_load_tract2221__mutmut_4, 
-    'x_load_tract2221__mutmut_5': x_load_tract2221__mutmut_5, 
-    'x_load_tract2221__mutmut_6': x_load_tract2221__mutmut_6, 
-    'x_load_tract2221__mutmut_7': x_load_tract2221__mutmut_7, 
+'x_load_tract2221__mutmut_1': x_load_tract2221__mutmut_1,
+    'x_load_tract2221__mutmut_2': x_load_tract2221__mutmut_2,
+    'x_load_tract2221__mutmut_3': x_load_tract2221__mutmut_3,
+    'x_load_tract2221__mutmut_4': x_load_tract2221__mutmut_4,
+    'x_load_tract2221__mutmut_5': x_load_tract2221__mutmut_5,
+    'x_load_tract2221__mutmut_6': x_load_tract2221__mutmut_6,
+    'x_load_tract2221__mutmut_7': x_load_tract2221__mutmut_7,
     'x_load_tract2221__mutmut_8': x_load_tract2221__mutmut_8
 }
 x_load_tract2221__mutmut_orig.__name__ = 'x_load_tract2221'

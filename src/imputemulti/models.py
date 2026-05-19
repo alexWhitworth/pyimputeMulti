@@ -1,8 +1,9 @@
 """Data models for imputation results."""
 
 from dataclasses import dataclass
-from typing import List
+
 import pandas as pd
+
 
 @dataclass(frozen=True)
 class ModImputeMultiResult:
@@ -21,5 +22,5 @@ class ImputeMultiResult(ModImputeMultiResult):
     """Represents the outcome of a full imputation, including imputed data."""
 
     Gcall: str
-    data: List[pd.DataFrame]
+    data: list[pd.DataFrame]
     nmiss: int

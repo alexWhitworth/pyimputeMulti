@@ -5,13 +5,13 @@ using Expectation-Maximization (EM) and Data Augmentation (DA) algorithms.
 """
 
 from .algorithms import multinomial_impute, multinomial_stats
-from .utils import load_tract2221
 from .models import ImputeMultiResult, ModImputeMultiResult
+from .utils import load_tract2221
 
 __all__ = [
-    "multinomial_impute",
-    "multinomial_stats",
-    "load_tract2221",
     "ImputeMultiResult",
     "ModImputeMultiResult",
+    "load_tract2221",
+    "multinomial_impute",
+    "multinomial_stats",
 ]

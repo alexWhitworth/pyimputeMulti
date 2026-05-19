@@ -1,6 +1,6 @@
-import pytest
 import pandas as pd
-import numpy as np
+import pytest
+
 from imputemulti.models import ImputeMultiResult, ModImputeMultiResult
 
 # --- Feature: F-201 — Python Data Models and Priors ---
@@ -24,7 +24,7 @@ def test_impute_multi_result_immutability():
         data=[df, df],
         nmiss=0
     )
-    
+
     with pytest.raises(AttributeError):
         res.method = "DA"
 
@@ -41,7 +41,7 @@ def test_mod_impute_multi_result_immutability():
         mle_cp="none",
         mle_x_y=df
     )
-    
+
     with pytest.raises(AttributeError):
         res.method = "DA"
 

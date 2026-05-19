@@ -1,8 +1,8 @@
-import pytest
 import pandas as pd
-import numpy as np
-from imputemulti.priors import count_levels, data_dep_prior_multi, check_prior
+import pytest
+
 from imputemulti import load_tract2221
+from imputemulti.priors import check_prior, count_levels, data_dep_prior_multi
 
 # --- Feature: F-201 — Python Data Models and Priors ---
 # Spec version: 1.1.0
@@ -21,7 +21,7 @@ def test_count_levels_no_na():
         'A': pd.Series(['a', 'a', 'b', 'b'], dtype='category'),
         'B': pd.Series(['x', 'y', 'x', 'y'], dtype='category')
     })
-    
+
     res = count_levels(df, enum, has_na="no")
     # Should only return rows with counts > 0
     # ('a', 'x') count 2
@@ -36,7 +36,7 @@ def test_data_dep_prior_structure():
     """
     df = load_tract2221().iloc[:50]
     prior = data_dep_prior_multi(df)
-    
+
     assert isinstance(prior, pd.DataFrame)
     assert 'alpha' in prior.columns
     assert len(prior) > 0
@@ -50,7 +50,7 @@ def test_check_prior_flat():
     dat = pd.DataFrame({'A': [1], 'B': [2]})
     res = check_prior(dat, conj_prior="flat.prior", alpha=2.0, outer=True)
     assert res == 2.0
-    
+
     with pytest.raises(ValueError, match="Flat priors must be supplied as a scalar."):
         check_prior(dat, conj_prior="flat.prior", alpha="bad", outer=True)
 

@@ -1,10 +1,12 @@
 """Utility functions for data loading and preprocessing."""
 
-import pathlib
-from typing import Any, Dict, List
 import itertools
+import pathlib
+from typing import Any
+
 import numpy as np
 import pandas as pd
+
 
 def load_tract2221() -> pd.DataFrame:
     """Load the tract2221 dataset from the root data directory."""
@@ -12,7 +14,7 @@ def load_tract2221() -> pd.DataFrame:
     return pd.read_parquet(path)
 
 
-def expand_grid(levels_dict: Dict[str, List[Any]]) -> pd.DataFrame:
+def expand_grid(levels_dict: dict[str, list[Any]]) -> pd.DataFrame:
     """Perform a Python equivalent of R's expand.grid."""
     keys = levels_dict.keys()
     values = levels_dict.values()
@@ -25,27 +27,27 @@ def fact_to_int(df: pd.DataFrame) -> np.ndarray:
 
     Missing values are represented as i32::MIN (-2147483648).
     """
-    NA_VAL = np.int32(-2147483648)
+    na_val = np.int32(-2147483648)
     out = np.zeros(df.shape, dtype=np.int32)
-    
+
     for i, col in enumerate(df.columns):
         series = df[col]
         if not isinstance(series.dtype, pd.CategoricalDtype):
             series = series.astype('category')
-        
+
         # codes are 0-indexed, R's are 1-indexed.
         # codes -1 represent NaN in pandas categorical.
         codes = series.cat.codes.values.astype(np.int32)
         # Convert to 1-indexed and handle NaNs
         mask = codes == -1
         codes = codes + 1
-        codes[mask] = NA_VAL
+        codes[mask] = na_val
         out[:, i] = codes
-        
+
     return out
 
 
-def get_levels(df: pd.DataFrame) -> Dict[str, List[Any]]:
+def get_levels(df: pd.DataFrame) -> dict[str, list[Any]]:
     """Get levels for each categorical column."""
     levels = {}
     for col in df.columns:
