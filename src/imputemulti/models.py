@@ -1,3 +1,11 @@
+# --- Feature: F-201 - Python Data Models and Priors ---
+# Spec version: 2.0.0
+# Layer: python
+# Satisfies: ImputeMultiResult is immutable and validates field types.
+# Satisfies: data_dep_prior_multi produces alpha values consistent with R implementation for tract2221.
+# Performance budget: O(N*K) for prior calculation
+# Linked schemas: DS-001, DS-002
+# Linked APIs: None
 """Data models for imputation results."""
 
 from dataclasses import dataclass
