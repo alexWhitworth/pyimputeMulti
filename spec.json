@@ -399,7 +399,7 @@
       "description": "Conversion of R vignettes to Markdown/Sphinx and refined docstrings.",
       "phase": 3,
       "priority": 4,
-      "status": "pending_judge",
+      "status": "pending",
       "layer": "python",
       "dependencies": ["F-202"],
       "linked_schemas": [],
