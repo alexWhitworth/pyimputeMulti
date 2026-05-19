@@ -352,7 +352,7 @@
       "description": "Implementation of Expectation-Maximization and Data Augmentation algorithms in Python, using Rust kernels.",
       "phase": 2,
       "priority": 3,
-      "status": "needs_revalidation",
+      "status": "complete",
       "layer": "python",
       "dependencies": ["F-101", "F-201"],
       "linked_schemas": ["DS-001", "DS-002"],
