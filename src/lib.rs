@@ -1,3 +1,12 @@
+// --- Feature: F-101 - Rust Kernels for Counting and Comparison ---
+// Spec version: 2.0.0
+// Layer: ffi_boundary
+// Satisfies: count_compare_rust returns counts matching reference values for tract2221 dataset.
+// Satisfies: sup_dist_c_rust returns correct L-infinity distance with tolerance 1e-12.
+// Satisfies: mx_my_compare_rust correctly identifies indices of Y rows contained in X rows.
+// Performance budget: O(N*M) for counting
+// Linked schemas: None
+// Linked APIs: API-001, API-002, API-003
 use pyo3::prelude::*;
 use numpy::{PyArray1, PyReadonlyArray1, PyReadonlyArray2};
 
