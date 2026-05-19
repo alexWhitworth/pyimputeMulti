@@ -1,6 +1,6 @@
 {
-  "spec_version": "1.3.0",
-  "generated_at": "2026-05-19T08:30:00Z",
+  "spec_version": "2.0.0",
+  "generated_at": "2026-05-19T10:00:00Z",
   "project": {
     "name": "imputemulti",
     "description": "Migration of the R imputeMulti package to Python/Rust",
@@ -30,7 +30,10 @@
       "pyo3",
       "maturin",
       "plotnine",
-      "pytest-cov"
+      "pytest-cov",
+      "sphinx",
+      "myst-parser",
+      "sphinxcontrib-bibtex"
     ],
     "graphics": "plotnine"
   },
@@ -395,28 +398,37 @@
     },
     {
       "id": "F-301",
-      "name": "Documentation and Advanced Features",
-      "description": "Conversion of R vignettes to Markdown/Sphinx and refined docstrings.",
+      "name": "Full Documentation Migration",
+      "description": "Full migration of R package manual to MyST markdown using Sphinx, including mathematical foundations, runnable code examples, and BibTeX citations.",
       "phase": 3,
       "priority": 4,
-      "status": "complete",
+      "status": "pending",
       "layer": "python",
       "dependencies": ["F-202"],
       "linked_schemas": [],
       "linked_apis": [],
       "mutation_testing": {
-        "python": { "enabled": false, "rationale_if_disabled": "Documentation and I/O logic." },
-        "rust": { "enabled": false, "rationale_if_disabled": "Documentation and I/O logic." }
+        "python": { "enabled": false, "rationale_if_disabled": "Documentation logic." },
+        "rust": { "enabled": false, "rationale_if_disabled": "Documentation logic." }
       },
       "acceptance_criteria": [
-        "Documentation builds successfully with Sphinx/MkDocs.",
-        "Tutorial contains runnable Python equivalents of R vignette examples.",
-        "Public API has 100% docstring coverage."
+        "Sphinx configuration (`docs/conf.py`) includes `myst_parser` and `sphinxcontrib_bibtex` extensions.",
+        "`docs/imputemulti_manual.md` contains the full translated content from the R vignette.",
+        "LaTeX math blocks (align, equations) are correctly translated and rendered via MyST.",
+        "All R code examples are replaced with functional Python equivalents using the `imputemulti` package.",
+        "Citations are managed via `docs/references.bib` and rendered in a bibliography section.",
+        "Documentation builds successfully without warnings or broken links."
       ],
       "test_requirements": [
         {
           "description": "Verify docstring existence and formatting",
           "type": "unit",
+          "layer": "python",
+          "required": true
+        },
+        {
+          "description": "Sphinx build succeeds with zero errors",
+          "type": "integration",
           "layer": "python",
           "required": true
         }
@@ -509,6 +521,20 @@
       "severity": "high",
       "mitigation": "Enforce strict level ordering and integer encoding in utils.py; verify against R factor levels during data loading.",
       "linked_features": ["F-201", "F-202"]
+    },
+    {
+      "id": "R-DOC-01",
+      "description": "Mathematical notation translation errors from LaTeX to MyST markdown syntax.",
+      "severity": "medium",
+      "mitigation": "Peer review of rendered documentation against original LaTeX source; ensure Sphinx mathjax is correctly configured.",
+      "linked_features": ["F-301"]
+    },
+    {
+      "id": "R-DOC-02",
+      "description": "Citation resolution failure or broken cross-references in the generated manual.",
+      "severity": "low",
+      "mitigation": "Enable Sphinx nitpicky mode and verify bibliography generation.",
+      "linked_features": ["F-301"]
     },
     {
       "id": "R-FFI-01",
