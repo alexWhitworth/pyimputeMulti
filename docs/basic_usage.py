@@ -10,8 +10,8 @@ def main():
     print("Loading tract2221 dataset...")
     df_full = load_tract2221()
     
-    # Use a subset of columns for the basic example to ensure speed
     # (Full state space is very large)
+    # Following the R manual, we will use a subset of columns for this example.
     cols = ['age', 'gender', 'marital_status', 'edu_attain', 'emp_status']
     df = df_full[cols].copy()
     

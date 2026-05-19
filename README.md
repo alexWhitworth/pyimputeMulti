@@ -3,11 +3,12 @@
 A Python library for multivariate multinomial data imputation using Expectation-Maximization (EM) and Data Augmentation (DA) algorithms, with a high-performance Rust core.
 
 ## Features
-- Multivariate multinomial imputation.
+- **Multivariate multinomial imputation**: Fill missing values in categorical datasets.
+- **Algorithms**: 
     - Expectation-Maximization (EM) algorithm.
     - Data Augmentation (DA) algorithm.
-- Support for conjugate priors (Dirichlet) and data-dependent priors.
-- High-performance Rust implementation for core counting and distance functions.
+- **Priors**: Conjugate priors (Dirichlet) and data-dependent priors.
+- **Performance**: High-performance Rust implementation for core counting and comparison functions.
 
 ## Installation
 
@@ -29,6 +30,13 @@ da_result = multinomial_impute(df, method="DA", conj_prior="none")
 em_imputed_df = em_result.data[1]
 da_imputed_df = da_result.data[1]
 ```
+
+## Examples
+
+- See `docs/`
+    - [Basic Usage](docs/basic_usage.py)
+    - [Tutorial](docs/tutorial.md)
+
 
 
 ## References:
