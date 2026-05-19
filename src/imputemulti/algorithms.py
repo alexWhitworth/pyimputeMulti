@@ -1,3 +1,12 @@
+# --- Feature: F-202 - EM and DA Algorithms ---
+# Spec version: 2.0.0
+# Layer: python
+# Satisfies: multinomial_em converges to MLE matching R output within 1e-6 tolerance.
+# Satisfies: multinomial_data_aug produces posterior draws consistent with R implementation.
+# Satisfies: multinomial_impute correctly fills NAs in a test DataFrame.
+# Performance budget: O(Iter * (N*M + K^2))
+# Linked schemas: DS-001, DS-002
+# Linked APIs: API-001, API-002
 """Implementation of EM and DA algorithms for multivariate multinomial data."""
 
 from typing import Literal
