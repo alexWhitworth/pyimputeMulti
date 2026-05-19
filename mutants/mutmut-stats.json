@@ -1,0 +1,104 @@
+{
+    "tests_by_mangled_function_name": {
+        "imputemulti.algorithms.x_multinomial_impute": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas",
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na"
+        ],
+        "imputemulti.algorithms.x_multinomial_em": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic"
+        ],
+        "imputemulti.priors.x_count_levels": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_priors.py::test_count_levels_no_na",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_priors.py::test_data_dep_prior_structure",
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic"
+        ],
+        "imputemulti.utils.x_expand_grid": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_priors.py::test_data_dep_prior_structure",
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic"
+        ],
+        "imputemulti.data.x_load_tract2221": [
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_priors.py::test_data_dep_prior_structure"
+        ],
+        "imputemulti.priors.x_check_prior": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic",
+            "tests/test_priors.py::test_check_prior_non_informative",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_priors.py::test_check_prior_flat",
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic"
+        ],
+        "imputemulti.utils.x_fact_to_int": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_priors.py::test_count_levels_no_na",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas",
+            "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na",
+            "tests/test_algorithms.py::test_full_imputation_em",
+            "tests/test_priors.py::test_data_dep_prior_structure",
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic"
+        ],
+        "imputemulti.algorithms.x_multinomial_data_aug": [
+            "tests/test_algorithms.py::test_full_imputation_da",
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic"
+        ],
+        "imputemulti.algorithms.x_multinomial_stats": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic"
+        ],
+        "imputemulti.utils.x_get_levels": [
+            "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty",
+            "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic",
+            "tests/test_priors.py::test_data_dep_prior_structure"
+        ],
+        "imputemulti.priors.x_data_dep_prior_multi": [
+            "tests/test_priors.py::test_data_dep_prior_structure"
+        ]
+    },
+    "duration_by_test": {
+        "tests/test_algorithms.py::test_full_imputation_em": 0.09210987505502999,
+        "tests/test_algorithms.py::test_full_imputation_da": 0.05595829081721604,
+        "tests/test_algorithms_rigorous.py::test_multinomial_em_synthetic": 0.007177375024184585,
+        "tests/test_algorithms_rigorous.py::test_multinomial_impute_fills_nas": 0.006223249947652221,
+        "tests/test_algorithms_rigorous.py::test_multinomial_da_synthetic": 0.007864207960665226,
+        "tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty": 0.0041994990315288305,
+        "tests/test_algorithms_rigorous.py::test_multinomial_impute_all_na": 0.005636041285470128,
+        "tests/test_models.py::test_impute_multi_result_immutability": 0.00031158304773271084,
+        "tests/test_models.py::test_mod_impute_multi_result_immutability": 0.00022358307614922523,
+        "tests/test_models.py::test_mod_impute_multi_result_fields": 0.0004027907270938158,
+        "tests/test_priors.py::test_count_levels_no_na": 0.0017109587788581848,
+        "tests/test_priors.py::test_data_dep_prior_structure": 7.8649229989387095,
+        "tests/test_priors.py::test_check_prior_flat": 0.003253624774515629,
+        "tests/test_priors.py::test_check_prior_non_informative": 0.00023104087449610233,
+        "tests/test_rust_internal.py::test_sup_dist_c_rust": 0.00022050016559660435,
+        "tests/test_rust_internal.py::test_count_compare_rust_no_na": 0.00023179221898317337,
+        "tests/test_rust_internal.py::test_count_compare_rust_count_obs": 0.00018433388322591782,
+        "tests/test_rust_internal.py::test_mx_my_compare_rust": 0.00018979213200509548
+    },
+    "stats_time": 8.827262
+}
