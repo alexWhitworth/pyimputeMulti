@@ -36,7 +36,7 @@ target/
 .env
 
 # Project specific
-*.parquet
+# *.parquet
 tract2221.csv
 convert_data.py
 
