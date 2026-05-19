@@ -1,3 +1,5 @@
+"""Implementation of EM and DA algorithms for multivariate multinomial data."""
+
 import pandas as pd
 import numpy as np
 from typing import Literal, Optional, Union, List
@@ -8,12 +10,11 @@ from ._internal_rust import sup_dist_c_rust, mx_my_compare_rust
 
 def multinomial_stats(dat: pd.DataFrame, 
                       output: Literal["x_y", "z_Os_y", "possible.obs"]) -> pd.DataFrame:
-    """
-    Calculate observed-data sufficient statistics or enumerate possible patterns.
+    """Calculate observed-data sufficient statistics or enumerate possible patterns.
 
-        - "x_y": Sufficient statistics for complete cases (x_y).
-        - "z_Os_y": Sufficient statistics for marginally missing cases (z_Os_y).
-        - "possible.obs": Enumeration of all possible complete patterns (enum_comp).
+    - "x_y": Sufficient statistics for complete cases (x_y).
+    - "z_Os_y": Sufficient statistics for marginally missing cases (z_Os_y).
+    - "possible.obs": Enumeration of all possible complete patterns (enum_comp).
     """
     if output != "z_Os_y":
         levels = get_levels(dat)
@@ -41,8 +42,7 @@ def multinomial_em(x_y: pd.DataFrame, z_Os_y: pd.DataFrame, enum_comp: pd.DataFr
                    conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
                    alpha: Optional[Union[float, pd.DataFrame]] = None, tol: float = 5e-7, max_iter: int = 10000,
                    verbose: bool = False) -> ModImputeMultiResult:
-    """
-    EM algorithm for multivariate multinomial data.
+    """Implement the EM algorithm for multivariate multinomial data.
 
     Args:
         x_y: DataFrame with counts of complete cases.
@@ -57,6 +57,7 @@ def multinomial_em(x_y: pd.DataFrame, z_Os_y: pd.DataFrame, enum_comp: pd.DataFr
 
     Returns:
         ModImputeMultiResult containing the results of the EM algorithm.
+
     """
     # 01. Setup prior and initial theta_y
     enum_comp = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'), 
@@ -161,8 +162,7 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_Os_y: pd.DataFrame, enum_comp: pd.
                          conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
                          alpha: Optional[Union[float, pd.DataFrame]] = None, burnin: int = 100, post_draws: int = 1000,
                          verbose: bool = False) -> ModImputeMultiResult:
-    """
-    Data Augmentation algorithm for multivariate multinomial data.
+    """Implement the Data Augmentation algorithm for multivariate multinomial data.
 
     Args:
         x_y: DataFrame with counts of complete cases.
@@ -177,6 +177,7 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_Os_y: pd.DataFrame, enum_comp: pd.
 
     Returns:
         ModImputeMultiResult containing the results of the data augmentation algorithm.
+
     """
     enum_comp = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'), 
                             conj_prior=conj_prior, alpha=alpha, verbose=verbose,
@@ -255,8 +256,7 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
                        conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
                        alpha: Optional[Union[float, pd.DataFrame]] = None, verbose: bool = False,
                        **kwargs) -> ImputeMultiResult:
-    """
-    Main function to impute missing values for multivariate multinomial data.
+    """Impute missing values for multivariate multinomial data.
 
     Args:
         dat: Input DataFrame with categorical columns and missing values.
@@ -268,6 +268,7 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
 
     Returns:
         ImputeMultiResult containing the results of the imputation.
+
     """
     cat_cols = list(dat.columns)
     levels_with_na = {col: list(dat[col].astype('category').cat.categories) + [np.nan] 

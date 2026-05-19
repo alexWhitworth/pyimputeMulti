@@ -1,3 +1,5 @@
+"""Implementation of data-dependent priors and level counting utilities."""
+
 import pandas as pd
 import numpy as np
 from typing import Optional, Union, Literal
@@ -6,9 +8,7 @@ from ._internal_rust import count_compare_rust
 
 def count_levels(dat: pd.DataFrame, enum_list: pd.DataFrame, 
                  has_na: Literal["no", "count.obs", "count.miss"]) -> pd.DataFrame:
-    """
-    Count occurrences of patterns in dat matching enum_list.
-    """
+    """Count occurrences of patterns in dat matching enum_list."""
     # convert to integers
     e2 = fact_to_int(enum_list)
     dat2 = fact_to_int(dat)
@@ -23,9 +23,7 @@ def count_levels(dat: pd.DataFrame, enum_list: pd.DataFrame,
     return enum_res[enum_res['counts'] > 0].reset_index(drop=True)
 
 def data_dep_prior_multi(dat: pd.DataFrame) -> pd.DataFrame:
-    """
-    Creates a data dependent prior for p-dimensional multinomial distributions.
-    """
+    """Create a data dependent prior for p-dimensional multinomial distributions."""
     levels = get_levels(dat)
     enum = expand_grid(levels)
     
@@ -49,13 +47,10 @@ def data_dep_prior_multi(dat: pd.DataFrame) -> pd.DataFrame:
 
 def check_prior(dat: pd.DataFrame, 
                 conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
-                alpha: Optional[Union[float, pd.DataFrame]] = None,
-                verbose: bool = False,
+                alpha: Optional[Union[float, pd.DataFrame]] = None, verbose: bool = False,
                 outer: bool = False,
                 enum_comp: Optional[pd.DataFrame] = None) -> Optional[Union[float, pd.DataFrame]]:
-    """
-    Helper function for checking priors.
-    """
+    """Check and process the conjugate prior."""
     if outer:
         if conj_prior == "none":
             return None
