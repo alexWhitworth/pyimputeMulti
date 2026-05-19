@@ -1,0 +1,9 @@
+site_name: imputemulti
+theme: material
+
+nav:
+  - Home: index.md
+  - Tutorial: tutorial.md
+
+plugins:
+  - search
