@@ -304,7 +304,7 @@
       "description": "Implementation of ImputeMultiResult dataclasses and data-dependent prior calculation.",
       "phase": 2,
       "priority": 2,
-      "status": "needs_revalidation",
+      "status": "complete",
       "layer": "python",
       "dependencies": ["F-101"],
       "linked_schemas": ["DS-001", "DS-002"],
