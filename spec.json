@@ -1,6 +1,6 @@
 {
-  "spec_version": "1.2.0",
-  "generated_at": "2026-05-18T11:00:00Z",
+  "spec_version": "1.3.0",
+  "generated_at": "2026-05-19T08:30:00Z",
   "project": {
     "name": "imputemulti",
     "description": "Migration of the R imputeMulti package to Python/Rust",
@@ -316,7 +316,7 @@
       "mutation_testing": {
         "python": {
           "enabled": true,
-          "scope_paths": ["src/imputemulti/models.py", "src/imputemulti/priors.py"],
+          "scope_paths": ["src/imputemulti/models.py", "src/imputemulti/priors.py", "src/imputemulti/utils.py"],
           "rationale_if_disabled": null
         },
         "rust": {
@@ -399,7 +399,7 @@
       "description": "Conversion of R vignettes to Markdown/Sphinx and refined docstrings.",
       "phase": 3,
       "priority": 4,
-      "status": "pending",
+      "status": "pending_judge",
       "layer": "python",
       "dependencies": ["F-202"],
       "linked_schemas": [],
