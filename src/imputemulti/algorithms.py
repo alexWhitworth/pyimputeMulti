@@ -131,7 +131,12 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
         else:
             d = len(enum_comp)
             alpha_0 = alpha_vals.sum()
-            theta_y1 = (counts + alpha_vals - 1) / (n_obs + alpha_0 - d)
+            denominator = n_obs + alpha_0 - d
+            # Add a small epsilon to prevent division by zero or negative values
+            # in the denominator, ensuring numerical stability for probability estimates.
+            epsilon = 1e-10
+            safe_denominator = np.maximum(denominator, epsilon)
+            theta_y1 = (counts + alpha_vals - 1) / safe_denominator
 
         iter_count += 1
         dist = sup_dist_c_rust(theta_y, theta_y1)
