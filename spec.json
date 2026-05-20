@@ -402,7 +402,7 @@
       "description": "Full migration of R package manual to MyST markdown using Sphinx, including mathematical foundations, runnable code examples, and BibTeX citations.",
       "phase": 3,
       "priority": 4,
-      "status": "pending_judge",
+      "status": "complete",
       "layer": "python",
       "dependencies": ["F-202"],
       "linked_schemas": [],
