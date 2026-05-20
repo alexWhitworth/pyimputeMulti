@@ -5,16 +5,16 @@ Email: whitworth.alex@gmail.com
 
 ## Abstract
 
-`imputeMulti` is a Python package for imputation of multivariate multinomial missing data
+_`imputeMulti` is a Python package for imputation of multivariate multinomial missing data
 via expectation-maximization and data augmentation algorithms. The package allows the
 specification of Bayesian priors, including data-dependent priors. For performance,
 calculation of the summary statistics of the multinomial distribution is implemented in
 Rust; `imputeMulti` also supports these calculations in parallel.
 As a result, the `imputeMulti` package capably handles large datasets. In this article,
 we introduce the package's functionality and provide a hands-on approach to solving multinomial
-missing data problems.
+missing data problems._
 
-Keywords: multinomial, missing data, imputation, expectation-maximization, data-augmentation, EM, DA, Python
+**Keywords:** multinomial, missing data, imputation, expectation-maximization, data-augmentation, EM, DA, Python
 
 ## Introduction
 
@@ -55,7 +55,6 @@ missing data problems; {ref}`sec:guide` provides a user's guide to `imputeMulti`
 {ref}`sec:compare` compares `imputeMulti` with alternative imputation methods; and
 {ref}`sec:conclude` concludes.
 
-(sec:multi)=
 ## Multinomial missing data
 
 `imputeMulti` is an implementation of the imputation methods for multivariate multinomial missing
@@ -71,21 +70,21 @@ The cell counts of $D$ are denoted by $x_d, d = 1,\ldots, D$. If the
 sample size is $n$, then $x$ has a multinomial distribution:
 
 ```{math}
-x|	heta \sim M(n,	heta)
+x|\theta \sim M(n,	\theta)
 ```
 
-with parameter vector $	heta = (	heta_1, 	heta_2, \ldots, 	heta_D )$. The likelihood function
-for the multinomial parameter $	heta$ is
+with parameter vector $	heta = (\theta_1, \theta_2, , \ldots, \theta_D )$. The likelihood function
+for the multinomial parameter $\theta$ is
 
 ```{math}
-L(	heta|Y) \propto \prod_{d=1}^D 	heta_{d}^{x_d} I_{\Theta(	heta)}
+L(\theta|Y) \propto \prod_{d=1}^D \theta_{d}^{x_d} I_{\Theta(\theta)}
 ```
 
-where $I_{\Theta(	heta)}$ is an indicator function equal to 1 if $	heta \in \Theta$ and 0 otherwise.
+where $I_{\Theta(\theta)}$ is an indicator function equal to 1 if $\theta \in \Theta$ and 0 otherwise.
 This leads to the well known maximum likelihood estimates (MLE):
 
 ```{math}
-\hat 	heta_d = \frac{x_d}{n}, d= 1,\ldots, D
+\hat \theta_d = \frac{x_d}{n}, d= 1,\ldots, D
 ```
 
 ### The Bayesian case and the Dirichlet prior
@@ -97,16 +96,17 @@ The prior and posterior of $	heta$ with a Dirichlet prior are thus written in sh
 
 ```{math}
 \begin{align}
-  	heta|\alpha &\sim D(\alpha) 
-  	heta|Y &\sim D(\alpha')
+  	\theta|\alpha &\sim D(\alpha) \\
+  	\theta|Y &\sim D(\alpha')
 \end{align}
 ```
 
 where $\alpha' = (\alpha_1 + x_1, \alpha_2 + x_2, \ldots, \alpha_D + x_D)$. The posterior mean is
 
 ```{math}
-\E(	heta|Y) = \left(\frac{\alpha_1'}{\alpha_0'}, \frac{\alpha_2'}{\alpha_0'} \ldots,
-    \frac{\alpha_D'}{\alpha_0'} ight)
+\E(\theta|Y) = \left(\frac{\alpha_1'}{\alpha_0'}, \frac{\alpha_2'}{\alpha_0'} \ldots,
+    \frac{\alpha_D'}{\alpha_0'} 
+ight)
 ```
 
 with $\alpha_0' = \sum_{d=1}^D (\alpha_d + x_d) = \alpha_0 + n$.
@@ -127,8 +127,9 @@ by $s= 1,2,\ldots,S$ and define a set of indicator variables:
 
 ```{math}
 r_{sj} = \left\{ \begin{array}{lc}
-    1 & \mbox{if } Y_j \mbox{ is observed in } s 
-    0 & \mbox{if } Y_j \mbox{ is missing in } s \end{array} ight.
+    1 & \mbox{if } Y_j \mbox{ is observed in } s \\
+    0 & \mbox{if } Y_j \mbox{ is missing in } s \end{array} 
+ight.
 ```
 
 Let $O_s(y)$ and $M_s(y)$ respectively denote the sets of observed and missing variables within each
@@ -136,7 +137,7 @@ missingness pattern and with elements defined
 
 ```{math}
 \begin{align}
-  O_s(y) &= \{y_j : r_{sj} = 1 \} 
+  O_s(y) &= \{y_j : r_{sj} = 1 \} \\
   M_s(y) &= \{y_j : r_{sj} = 0 \}.
 \end{align}
 ```
@@ -159,7 +160,8 @@ observed values is denoted
 And the observed-data loglikelihood contribution from the partially observed data is
 
 ```{math}
-l(	heta|Y_{obs}) = \sum_{s=1}^S \sum_{O_s(y)\in O_s} z_{O_s(y)}^{s} log\left(\beta_{O_s(y)} ight) .
+l(	heta|Y_{obs}) = \sum_{s=1}^S \sum_{O_s(y)\in O_s} z_{O_s(y)}^{s} log\left(\beta_{O_s(y)} 
+ight) .
 ```
 
 The EM algorithm for maximizing the complete-data loglikelihood is straightforward, with the multivariate
@@ -178,7 +180,6 @@ counts of partially missing observations to fully observed $x^{obs}$ counts base
 of $	heta$ as in {eq}:ref:`E-step`, the proportional allocation is replaced by a random allocation based on the
 current value of $	heta$.
 
-(sec:guide)=
 ## Software user's guide
 
 We now turn to the practical matter of using `imputeMulti`, which is freely available as a package
@@ -266,10 +267,12 @@ df_em = df[cols_em].copy()
 import numpy as np
 np.random.seed(2134)
 
-impute_em_none = multinomial_impute(df_em,
-                                      method="EM",
-                                      conj_prior="none",
-                                      verbose=True)
+impute_em_none = multinomial_impute(
+    df_em,
+    method="EM",
+    conj_prior="none",
+    verbose=True
+)
 print(impute_em_none.mle_iter)
 print(impute_em_none.mle_log_lik)
 ````
@@ -283,21 +286,26 @@ Typical of EM, convergence is quite rapid. By changing the argument
 import numpy as np
 np.random.seed(2134)
 
-impute_em_non = multinomial_impute(df_em,
-                                     method="EM",
-                                     conj_prior="non.informative",
-                                     verbose=True)
+impute_em_non = multinomial_impute(
+    df_em,
+    method="EM",
+    conj_prior="non.informative",
+    verbose=True
+)
 
-impute_em_flat = multinomial_impute(df_em,
-                                      method="EM",
-                                      conj_prior="flat.prior",
-                                      alpha=10.0,
-                                      verbose=True)
+impute_em_flat = multinomial_impute(
+    df_em,
+    method="EM",
+    conj_prior="flat.prior",
+    verbose=True
+)
 
-impute_em_data = multinomial_impute(df_em,
-                                      method="EM",
-                                      conj_prior="data.dep",
-                                      verbose=True)
+impute_em_data = multinomial_impute(
+    df_em,
+    method="EM",
+    conj_prior="data.dep",
+    verbose=True
+)
 ````
 
 where a flat prior may be specified as a scalar by the parameter `alpha`. Note the use of a
@@ -326,7 +334,6 @@ print(impute_em_mle.mle_log_lik)
 
 The outputs of these functions will be examined in {ref}`sec:outputs`.
 
-(sec:DA)=
 ### Imputation via data-augmentation
 
 Using `imputeMulti` for DA is very similar to the use for expectation-maximization. The chief
@@ -373,7 +380,6 @@ defaults to 100. Parameter estimates
 are calculated as the posterior mean based on `post_draws` draws, which can again
 be specified for both functions. The default is 1000 draws.
 
-(sec:outputs)=
 ### Examining imputed outputs
 
 `imputeMulti` uses dataclasses. Both `multinomial_em` and `multinomial_data_aug`
@@ -499,7 +505,6 @@ in parameter estimates for the non-informative prior, all estimates for the flat
 smoothed to near 0.07. This comparison shows that, as with most Bayesian analyses, the results of
 imputation of multinomial data can be quite sensitive to the choice of prior.
 
-(sec:compare)=
 ## Comparing `imputeMulti`
 
 In this section, we compare `imputeMulti` with other popular imputation methods. Specifically,
@@ -525,35 +530,6 @@ best way to limit some of the richness of their data. None of the other three pa
 restriction. To keep the remainder of the comparison as equivalent as possible, only four variables
 are used: `gender`, `marital_status`, `edu_attain`, and `emp_status`.
 
-### Comparing algorithm speed
-
-The `microbenchmark` package {cite}`microbenchmark` (R) is used for speed comparisons. Tests were
-performed on an Intel Xeon CPU E5-2960 v3 2.60GHz server running Windows Server 2012 R2 Standard and were
-not run in parallel. To purely test algorithm speed, multiple imputations are not specified for any
-packages that allow them.
-
-````{code-block} python
-# The microbenchmark R package does not have a direct Python equivalent for this exact comparison.
-# Performance benchmarks for imputeMulti Python implementation are covered in Feature F-401.
-print("Performance comparison with R packages is not directly translated to Python here.")
-print("Refer to Feature F-401 for imputeMulti performance benchmarks.")
-# Example of how one might benchmark in Python using timeit, if needed:
-# import timeit
-# setup_code = """ 
-# from imputemulti import multinomial_impute, load_tract2221
-# df = load_tract2221()[['gender', 'marital_status', 'edu_attain', 'emp_status']].copy()
-# """
-# stmt_em = "multinomial_impute(df, method="EM", conj_prior="non.informative")"
-# time_em = timeit.timeit(stmt_em, setup_code, number=10)
-# print(f"EM time: {time_em/10} seconds per run")
-````
-
-All algorithms finish in a matter of milliseconds or seconds. `Amelia` is clearly the fastest
-algorithm, beating `imputeMulti` by more than an order of magnitude in this test.
-As expected, EM, which stops upon convergence, is noticeably faster than DA, which must run all
-`burnin` iterations before calculating posterior means.
-
-(sec:param_compare)=
 ### Comparing outputs: Parameter estimates
 
 Differences in the outputs of the various methods are examined next, focusing on differences
@@ -633,7 +609,6 @@ obtaining the marginal distribution of $\hat 	heta$ by gender and educational at
 in {ref}`sec:outputs`. An additional advantage to using `imputeMulti` is therefore
 improved ease of use for researchers interested in multinomial parameter estimates.
 
-(sec:obs_compare)=
 ### Comparing outputs: Observation level imputations
 
 Observation level imputations are provided by `Amelia`, `mice`, and `Hmisc`. In `Amelia`
@@ -684,7 +659,6 @@ maintains this advantage even against multiple imputations. The closest comparis
     | 60%             | 0.2853 | 0.2857 | 0.1653 | 0.1994 | 0.2052 |
 :::
 
-(sec:conclude)=
 ### Conclusion
 
 Deciding how to deal with missing values is a frequent concern for applied researchers. Although
@@ -714,5 +688,5 @@ the parallel overhead is only justified for datasets with several hundred thousa
 
 ### References
 
-```{bibliography}
+```{bibliography} references.bib
 ```

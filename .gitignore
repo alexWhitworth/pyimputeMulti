@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 build/
+_build/
 develop-eggs/
 dist/
 downloads/
@@ -39,6 +40,7 @@ target/
 # *.parquet
 tract2221.csv
 convert_data.py
+reformat_tables.py
 
 # System
 .DS_Store
@@ -46,5 +48,8 @@ convert_data.py
 # plans
 migration_plan.md
 codecov_plan.md
+# spec.json
 
 mutants/
+
+judge_verdicts/

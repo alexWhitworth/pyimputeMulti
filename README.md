@@ -31,12 +31,11 @@ em_imputed_df = em_result.data[1]
 da_imputed_df = da_result.data[1]
 ```
 
-## Examples
+## Detailed Examples
 
 - See `docs/`
     - [Basic Usage](docs/basic_usage.py)
     - [Tutorial](docs/tutorial.md)
-
 
 
 ## References:
