@@ -36,6 +36,7 @@ da_imputed_df = da_result.data[1]
 - See `docs/`
     - [Basic Usage](docs/basic_usage.py)
     - [Tutorial](docs/tutorial.md)
+    - [Full Manual](docs/imputemulti_manual.md)
 
 
 ## References:
