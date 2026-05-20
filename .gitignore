@@ -46,10 +46,13 @@ reformat_tables.py
 .DS_Store
 
 # plans
-migration_plan.md
-codecov_plan.md
-# spec.json
+# plans/
 
+# not added
 mutants/
-
 judge_verdicts/
+.benchmarks/
+
+# coverage
+coverage/
+coverage.xml

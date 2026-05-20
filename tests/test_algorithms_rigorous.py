@@ -105,6 +105,54 @@ def test_multinomial_em_edge_empty():
     res = multinomial_em(x_y, z_Os_y, enum_comp, n_obs=0, conj_prior="non.informative")
     assert res.mle_iter >= 0
 
+def test_multinomial_em_conj_prior_and_verbose():
+    """
+    Test multinomial_em with a conjugate prior and verbose output.
+    This aims to cover conditional log_lik updates and verbose print statements.
+    """
+    df = pd.DataFrame({
+        'A': pd.Series([0]*40 + [1]*40 + [0]*20, dtype='category'),
+        'B': pd.Series([0]*40 + [1]*40 + [np.nan]*20, dtype='category')
+    })
+
+    enum_comp = expand_grid({'A': [0, 1], 'B': [0, 1]})
+    n_obs = len(df)
+
+    x_y = multinomial_stats(df, output="x_y")
+    z_Os_y = multinomial_stats(df, output="z_Os_y")
+
+    # Use non.informative prior and verbose=True
+    res = multinomial_em(x_y, z_Os_y, enum_comp, n_obs, conj_prior="non.informative", tol=1e-10, verbose=True)
+
+    assert res.method == "EM"
+    assert res.mle_cp == "non.informative"
+    # We cannot directly assert on print output, but running with verbose=True covers the line.
+
+def test_multinomial_data_aug_conj_prior_and_verbose():
+    """
+    Test multinomial_data_aug with a conjugate prior and verbose output.
+    This aims to cover conditional log_lik updates and verbose print statements.
+    """
+    np.random.seed(42)  # Set seed for stability
+    df = pd.DataFrame({
+        'A': pd.Series([0]*40 + [1]*40 + [0]*20, dtype='category'),
+        'B': pd.Series([0]*40 + [1]*40 + [np.nan]*20, dtype='category')
+    })
+
+    enum_comp = expand_grid({'A': [0, 1], 'B': [0, 1]})
+    n_obs = len(df)
+
+    x_y = multinomial_stats(df, output="x_y")
+    z_Os_y = multinomial_stats(df, output="z_Os_y")
+
+    # Use non.informative prior and verbose=True
+    res = multinomial_data_aug(x_y, z_Os_y, enum_comp, n_obs,
+                               conj_prior="non.informative", burnin=5, post_draws=10, verbose=True)
+
+    assert res.method == "DA"
+    assert res.mle_cp == "non.informative"
+    # We cannot directly assert on print output, but running with verbose=True covers the line.
+
 def test_multinomial_impute_all_na():
     """
     Test imputation where all values are NA.

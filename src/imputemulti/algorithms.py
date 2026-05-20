@@ -52,8 +52,10 @@ def multinomial_stats(dat: pd.DataFrame,
         return enum_comp
 
 
-def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame, n_obs: int,
-                   conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
+def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame,
+                   n_obs: int,
+                   conj_prior: Literal["none", "data.dep", "flat.prior",
+                                       "non.informative"] = "none",
                    alpha: float | pd.DataFrame | None = None, tol: float = 5e-7,
                    max_iter: int = 10000, verbose: bool = False) -> ModImputeMultiResult:
     """Implement the EM algorithm for multivariate multinomial data.
@@ -179,8 +181,10 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
     )
 
 
-def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame, n_obs: int,
-                         conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
+def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame,
+                         n_obs: int,
+                         conj_prior: Literal["none", "data.dep",
+                                             "flat.prior", "non.informative"] = "none",
                          alpha: float | pd.DataFrame | None = None, burnin: int = 100,
                          post_draws: int = 1000, verbose: bool = False) -> ModImputeMultiResult:
     """Implement the Data Augmentation algorithm for multivariate multinomial data.
@@ -275,7 +279,8 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
 
 
 def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
-                       conj_prior: Literal["none", "data.dep", "flat.prior", "non.informative"] = "none",
+                       conj_prior: Literal["none", "data.dep", "flat.prior",
+                                            "non.informative"] = "none",
                        alpha: float | pd.DataFrame | None = None, verbose: bool = False,
                        **kwargs) -> ImputeMultiResult:
     """Impute missing values for multivariate multinomial data.

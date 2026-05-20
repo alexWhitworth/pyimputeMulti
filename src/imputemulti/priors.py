@@ -2,7 +2,7 @@
 # Spec version: 2.0.0
 # Layer: python
 # Satisfies: ImputeMultiResult is immutable and validates field types.
-# Satisfies: data_dep_prior_multi produces alpha values consistent with R implementation for tract2221.
+# Satisfies: data_dep_prior_multi produces alpha values consistent with R implementation.
 # Performance budget: O(N*K) for prior calculation
 # Linked schemas: DS-001, DS-002
 # Linked APIs: None
