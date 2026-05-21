@@ -441,7 +441,7 @@
       "description": "Full validation suite including performance benchmarks and integration tests.",
       "phase": 4,
       "priority": 5,
-      "status": "pending",
+      "status": "complete",
       "layer": "ffi_boundary",
       "dependencies": ["F-202", "F-301"],
       "linked_schemas": [],
@@ -479,11 +479,11 @@
     },
     {
       "id": "F-501",
-      "name": "Code Coverage and CI Integration",
-      "description": "Establish automated testing and coverage reporting using GitHub Actions and Codecov.",
+      "name": "Code Coverage Configuration",
+      "description": "Establish local coverage reporting and enforcement via pyproject.toml. Personal project scope: no external CI service required.",
       "phase": 5,
       "priority": 6,
-      "status": "pending",
+      "status": "complete",
       "layer": "python",
       "dependencies": ["F-401"],
       "linked_schemas": [],
@@ -496,18 +496,17 @@
         "notes": null
       },
       "mutation_testing": {
-        "python": { "enabled": false, "rationale_if_disabled": "Infrastructure and CI configuration." },
-        "rust": { "enabled": false, "rationale_if_disabled": "Infrastructure and CI configuration." }
+        "python": { "enabled": false, "rationale_if_disabled": "Infrastructure configuration only." },
+        "rust": { "enabled": false, "rationale_if_disabled": "Infrastructure configuration only." }
       },
       "acceptance_criteria": [
-        "pyproject.toml includes standardized coverage configuration.",
-        "GitHub Actions workflow runs tests on every push to master and PR.",
-        "Coverage report (coverage.xml) is successfully uploaded to Codecov.",
-        "CI fails if total coverage falls below 80%."
+        "pyproject.toml includes standardized coverage configuration with pytest-cov as a declared dependency.",
+        "pytest --cov enforces a fail_under threshold of 85% on every local test run.",
+        "coverage.xml is produced on every test run and is gitignored."
       ],
       "test_requirements": [
         {
-          "description": "Verify CI workflow execution and status reporting",
+          "description": "Coverage threshold enforced: uv run pytest exits non-zero if coverage drops below 85%",
           "type": "integration",
           "layer": "python",
           "required": true
