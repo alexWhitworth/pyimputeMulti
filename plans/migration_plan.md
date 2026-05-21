@@ -31,7 +31,7 @@ The `imputeMulti` package, currently implemented in R and C++, will be migrated 
 *   **Parameter Estimates:** Will be returned as `pandas.DataFrame` or `polars.DataFrame` for easy integration with Python's data analysis workflows.
 
 ## 4. Component/Module Breakdown (API Definitions)
-
+    
 The `imputemulti` Python package will expose a public API that closely mirrors the original R package's functionality. The underlying, performance-critical logic will be implemented in Rust modules, accessible via PyO3 bindings.
 
 ```
