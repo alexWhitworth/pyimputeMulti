@@ -154,31 +154,31 @@ The marginal probability that an observation falls within a given cell of this t
 observed values is denoted
 
 ```{math}
-\beta_{O_s(y)} = \sum_{M_s(y)\in M_s} 	heta_{y.} \mbox{  .}
+\beta_{O_s(y)} = \sum_{M_s(y)\in M_s} \theta_{y.} \mbox{  .}
 ```
 
 And the observed-data loglikelihood contribution from the partially observed data is
 
 ```{math}
-l(	heta|Y_{obs}) = \sum_{s=1}^S \sum_{O_s(y)\in O_s} z_{O_s(y)}^{s} log\left(\beta_{O_s(y)} 
+l(\theta|Y_{obs}) = \sum_{s=1}^S \sum_{O_s(y)\in O_s} z_{O_s(y)}^{s} log\left(\beta_{O_s(y)} 
 ight) .
 ```
 
 The EM algorithm for maximizing the complete-data loglikelihood is straightforward, with the multivariate
 case first described by {cite}`fuchs`. For the E-step, we find the expected summary statistics
-given the observed data and the current value of theta,
+given the observed data and the current value of $\theta$,
 ```{math}
-E(x_y|Y_{obs}, 	heta) = \sum_{s=1}^S z_{O_s(y)}^{s} 	heta_y / \beta_{O_s(y)} .
+E(x_y|Y_{obs}, \theta) = \sum_{s=1}^S z_{O_s(y)}^{s} \theta_y / \beta_{O_s(y)} .
 :label: E-step
 ```
-This leads to the trivial M-step. Under maximum-likelihood, set $\hat 	heta = E(x_y|Y_{obs}, 	heta) / n$
+This leads to the trivial M-step. Under maximum-likelihood, set $\hat 	heta = E(x_y|Y_{obs}, \theta) / n$
 for all $y \in Y$. A minor modification is made to maximize the complete-data posterior density under
-a Dirichlet prior $\hat 	heta_y = (x_y +\alpha_y - 1) / (n + \alpha_0 - D)$ for all $y \in Y$ where
+a Dirichlet prior $\hat \theta_y = (x_y +\alpha_y - 1) / (n + \alpha_0 - D)$ for all $y \in Y$ where
 $\alpha_0=\sum_i^D \alpha_i$ and $D$ is the number of parameters. Similarly, different minor modifications
 can be made to convert the EM algorithm to data-augmentation. For DA, instead of proportionally allocating the
 counts of partially missing observations to fully observed $x^{obs}$ counts based on the current value
-of $	heta$ as in {eq}:ref:`E-step`, the proportional allocation is replaced by a random allocation based on the
-current value of $	heta$.
+of $\theta$ as in {eq}:ref:`E-step`, the proportional allocation is replaced by a random allocation based on the
+current value of $\theta$.
 
 ## Software user's guide
 
@@ -414,7 +414,7 @@ print(imputed_df.head())
 ````
 
 Researchers can also examine the parameter estimates directly. For example, researchers may be
-interested in the marginal distribution of $\hat 	heta$ by gender
+interested in the marginal distribution of $\hat \theta$ by gender
 and educational attainment among those aged eighteen to thirty-four compared to those aged fifty to
 sixty-four. Here a comparison is shown for a ``"non.informative"`` and ``"flat.prior"``, which
 also illustrates the impact of the previously chosen strong flat prior.
@@ -483,7 +483,7 @@ print(np.round(marg_flat50_gender_edu / flat_theta50_64, 4))
     :name: tbl:marg_param_est_flatprior
     :align: center
 
-    Estimates of the marginal distribution of $\hat 	heta$ by gender and educational attainment
+    Estimates of the marginal distribution of $\hat \theta$ by gender and educational attainment
     using a strong flat prior. Estimates are for individuals aged 18-34 and 50-64.
 
     | **Ages 18-34** | `lt_hs` | `some_hs` | `hs_grad` | `some_col` | `assoc_dec` | `ba_deg` | `grad_deg` |
@@ -495,12 +495,12 @@ print(np.round(marg_flat50_gender_edu / flat_theta50_64, 4))
     | Male           | 0.0801  | 0.0738    | 0.0652    | 0.0694     | 0.0702      | 0.0713   | 0.0652     |
 :::
 
-The marginalized estimates of $\hat 	heta$ with a non-informative prior show that education levels
+The marginalized estimates of $\hat \theta$ with a non-informative prior show that education levels
 have improved over time as the younger cohort has higher estimated parameters for
 `some college` or higher educational attainment. It is also clear that there is greater gender equality
 in educational outcomes for the younger cohort. But the analyst would not draw these conclusions
 using a strong flat prior. As expected, a strong flat prior
-exerts substantial smoothing effects on the estimates of $\hat 	heta$. While there is a large range
+exerts substantial smoothing effects on the estimates of $\hat \theta$. While there is a large range
 in parameter estimates for the non-informative prior, all estimates for the flat prior have been
 smoothed to near 0.07. This comparison shows that, as with most Bayesian analyses, the results of
 imputation of multinomial data can be quite sensitive to the choice of prior.
@@ -605,7 +605,7 @@ As is clear from the above output, when working with multivariate multinomial da
 `Amelia` package, researchers are
 required to post-process parameter outputs to fit their needs. It is not immediately obvious
 how to get specific multinomial parameter estimates or how to marginalize these estimates, for example
-obtaining the marginal distribution of $\hat 	heta$ by gender and educational attainment as
+obtaining the marginal distribution of $\hat \theta$ by gender and educational attainment as
 in {ref}`sec:outputs`. An additional advantage to using `imputeMulti` is therefore
 improved ease of use for researchers interested in multinomial parameter estimates.
 

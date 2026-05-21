@@ -1,0 +1,61 @@
+=== JUDGE EVALUATION REPORT ===
+Spec:           spec.json v2.0.0
+Feature:        F-301 — Full Documentation Migration
+Layer:          python
+Evaluated:      2026-05-19TXX:XX:XXZ
+
+━━━ OVERALL VERDICT: [ CONDITIONAL_PASS ] ━━━
+
+━━━ ACCEPTANCE CRITERIA SCORECARD ━━━
+  ✅ MET      : 4 criteria
+  ⚠️  BRITTLE  : 1 criteria
+  ❌ UNMET    : 0 criteria
+
+  Criterion : "`docs/imputemulti_manual.md` contains the full translated content from the R vignette, excluding the section on algorithm speed comparison, which is not applicable to this migration."
+  Status    : BRITTLE
+  Evidence  : docs/imputemulti_manual.md
+  Finding   : Qualitative assessment without original R vignette for direct comparison; unable to definitively verify "full translated content" and precise exclusion.
+  Type      : ADVISORY
+
+━━━ TEST QUALITY — PYTHON ━━━
+  Anti-patterns found: 1
+  [MAJOR] RuntimeWarning: invalid value encountered in divide
+  Location : tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty
+  Finding  : src/imputemulti/algorithms.py:134: RuntimeWarning: invalid value encountered in divide theta_y1 = (counts + alpha_vals - 1) / (n_obs + alpha_0 - d)
+  Type     : BLOCKING
+
+━━━ TEST QUALITY — RUST ━━━
+  Rust layer not applicable for this feature.
+
+━━━ FFI BOUNDARY AUDIT ━━━
+  FFI boundary audit not applicable for this feature.
+
+━━━ MUTATION TESTING — PYTHON ━━━
+  Python mutation testing skipped per spec.
+
+━━━ MUTATION TESTING — RUST ━━━
+  Rust mutation testing skipped per spec.
+
+━━━ COVERAGE — PYTHON ━━━
+  Line coverage   : 96%  (threshold: 80%)
+  Uncovered lines : data/__init__.py: 1-14
+                    src/imputemulti/algorithms.py: 115, 163-164, 227, 247, 337
+                    src/imputemulti/priors.py: 46, 75-77, 84, 98, 100-102
+
+━━━ PERFORMANCE ━━━
+  Budget           : none specified
+  Benchmark result : not tested
+  Eye-check        : consistent with budget
+
+━━━ ESCALATIONS ━━━
+  No escalations requiring human architectural judgment.
+
+━━━ VERDICT RATIONALE ━━━
+The documentation builds successfully and generally meets the criteria for content translation and code examples. The Sphinx configuration and citation management are also correctly implemented. However, there is a BRITTLE finding regarding the completeness of content translation due to the lack of the original R vignette for direct comparison. Additionally, a RuntimeWarning in src/imputemulti/algorithms.py indicates a potential numerical stability issue that needs to be addressed.
+
+━━━ REQUIRED ACTIONS FOR PASS ━━━
+1. Address the `RuntimeWarning: invalid value encountered in divide` in `src/imputemulti/algorithms.py` at line 134. This likely involves adding a small epsilon or handling division by zero/near-zero explicitly to ensure numerical stability.
+2. Review and confirm the full translation of the `docs/imputemulti_manual.md` against the original R vignette, and ensure precise exclusion of the algorithm speed comparison section (AC2). This will require human intervention due to lack of the original reference in this environment.
+
+[ADVISORY:]
+A1. Investigate the `CoverageWarning: Couldn't parse Python file 'reformat_tables.py'`. This file might be extraneous or require specific handling in the coverage configuration.

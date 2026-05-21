@@ -28,7 +28,7 @@ def multinomial_stats(dat: pd.DataFrame,
     - "z_os_y": Sufficient statistics for marginally missing cases (z_os_y).
     - "possible.obs": Enumeration of all possible complete patterns (enum_comp).
     """
-    output = output.lower()
+    output: Literal["x_y", "z_os_y", "possible.obs"] = output.lower()
     if output != "z_os_y":
         levels = get_levels(dat)
         enum_comp = expand_grid(levels)

@@ -30,7 +30,7 @@ def expand_grid(levels_dict: dict[str, list[Any]]) -> pd.DataFrame:
     return pd.DataFrame(grid, columns=keys)
 
 
-def fact_to_int(df: pd.DataFrame) -> np.ndarray:
+def fact_to_int(df: pd.DataFrame) -> np.ndarray[Any, np.dtype[np.int32]]:
     """Convert a dataframe with categorical columns to an integer array.
 
     Missing values are represented as i32::MIN (-2147483648).

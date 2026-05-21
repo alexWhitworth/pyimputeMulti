@@ -46,11 +46,10 @@ reformat_tables.py
 .DS_Store
 
 # plans
-# plans/
+# NA -- track
 
 # not added
 mutants/
-judge_verdicts/
 .benchmarks/
 
 # coverage
