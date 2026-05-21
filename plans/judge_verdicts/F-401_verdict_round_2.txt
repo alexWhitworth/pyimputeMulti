@@ -1,0 +1,195 @@
+=== JUDGE EVALUATION REPORT ===
+Spec:           plans/spec.json v2.0.0
+Feature:        F-401 — Testing, Benchmarking and Validation
+Layer:          ffi_boundary
+Evaluated:      2026-05-21T00:00:00Z
+
+━━━ OVERALL VERDICT: [ FAIL ] ━━━
+
+━━━ ACCEPTANCE CRITERIA SCORECARD ━━━
+  ✅ MET      : 1 criterion
+  ⚠️  BRITTLE  : 1 criterion
+  ❌ UNMET    : 1 criterion
+
+  Criterion : "Ruff and Mypy checks pass with no errors."
+  Status    : MET ✅
+  Evidence  : `uv run mypy src/` → "Success: no issues found in 6 source files"
+              `ruff check src/` → "All checks passed!"
+
+  Criterion : "Performance benchmarks show Rust implementation is at least 1.5x faster
+               than R/C++ for core kernels."
+  Status    : BRITTLE ⚠️
+  Evidence  : tests/test_benchmarks.py — 3 timing-only benchmarks pass (pytest-benchmark)
+  Finding   : The benchmarks measure absolute Rust execution time but contain NO comparison
+              against an R or Python baseline. The acceptance criterion requires demonstrating
+              ≥1.5x speedup over R/C++. No baseline value exists in the test, no assertion
+              on speedup ratio is made, and no R reference timing is present. The benchmarks
+              pass trivially because they assert nothing about relative performance.
+  Type      : ADVISORY (architectural — requires a baseline; escalated separately below)
+
+  Criterion : "Integration tests achieve > 85% code coverage."
+  Status    : UNMET ❌
+  Evidence  : Coverage report: TOTAL 78.20% (threshold: 85%)
+              algorithms.py: 69% — lines 136, 191-193, 229-302, 358, 384 uncovered
+              priors.py: 88% — lines 54, 83-85, 106, 108-110 uncovered
+  Finding   : Coverage is 6.8 points below the 85% threshold. The primary cause is that
+              8 tests FAIL, leaving multinomial_data_aug (lines 229-302) completely uncovered.
+  Type      : BLOCKING
+
+━━━ TEST QUALITY — PYTHON ━━━
+  Anti-patterns found: 4
+
+  [CRITICAL] Tautological / broken test fixture — test_algorithms_rigorous.py (6 tests)
+  Location : tests/test_algorithms_rigorous.py:36, 79, 103, 122, 145
+  Finding  : All tests calling multinomial_stats pass output="z_Os_y" (capital O). The
+             production function signature is `Literal["x_y", "z_os_y", "possible.obs"]`
+             (all lowercase). The call raises ValueError at runtime. These 6 tests have
+             never exercised the EM or DA algorithm paths they were written to cover.
+             The test fixture is broken — it passes an invalid literal to a type-checked API.
+  Type     : BLOCKING
+  Action   : In tests/test_algorithms_rigorous.py, change all 5 occurrences of
+             output="z_Os_y" to output="z_os_y" (lowercase o).
+
+  [CRITICAL] Missing dependency causes test failure — test_algorithms.py, test_priors.py
+  Location : tests/test_algorithms.py:7,19; tests/test_priors.py:37
+  Finding  : 3 tests call load_tract2221() → pd.read_parquet(), which requires pyarrow
+             or fastparquet. Neither is installed in the environment because pyproject.toml
+             does not list pyarrow as a dependency. Tests fail with ImportError at collection.
+             The tract2221 dataset is the primary integration data source for the project.
+  Type     : BLOCKING
+  Action   : Add "pyarrow" to the dependencies list in pyproject.toml. Run
+             `uv pip install pyarrow` to validate the tests then pass.
+
+  [CRITICAL] Empty assertion — test_algorithms_rigorous.py::test_multinomial_em_edge_empty
+  Location : tests/test_algorithms_rigorous.py:105-106
+  Finding  : The only assertion is `assert res.mle_iter >= 0`. Any non-negative integer
+             satisfies this, including 0 and 1. This test cannot catch a mutant that sets
+             mle_iter = 0 unconditionally. It asserts execution completed, not correctness.
+  Type     : BLOCKING
+  Action   : Add assertion on res.mle_x_y['theta_y'].sum() ≈ 1.0 (atol=1e-6) and
+             assert res.method == "EM".
+
+  [MAJOR] Benchmark tests assert no speedup ratio
+  Location : tests/test_benchmarks.py:62-87
+  Finding  : All 3 benchmark tests exercise timing only. No assertion compares Rust
+             throughput against a Python or R reference. The acceptance criterion
+             "≥1.5x faster than R/C++" cannot be verified from these tests alone.
+  Type     : ADVISORY (see ESCALATIONS)
+
+━━━ TEST QUALITY — RUST ━━━
+  cargo test: PASS
+  Rust unit tests present: YES
+  3 tests in src/lib.rs under #[cfg(test)]: test_sup_dist_c, test_mx_my_compare_logic,
+  test_count_compare_logic — all PASS.
+
+  Finding  : The Rust tests replicate the core logic in-line rather than calling the
+             #[pyfunction] wrappers directly. This means the PyO3 binding layer is not
+             exercised at the Rust test level — only at the Python FFI level. This is
+             acceptable since Python FFI tests in test_rust_internal.py cover the boundary.
+  Type     : ADVISORY
+
+━━━ FFI BOUNDARY AUDIT ━━━
+  Three-way signature agreement : PASS
+  Memory/layout compliance      : PASS
+  Cross-layer numerical test    : PRESENT
+  Build freshness               : FRESH
+
+  Three-way check:
+  - count_compare_rust: Rust (PyReadonlyArray2<i32>, PyReadonlyArray2<i32>, &str) →
+    pyi (PyReadonlyArray2_i32, PyReadonlyArray2_i32, str) → spec (2D int32, 2D int32, str). AGREE.
+  - sup_dist_c_rust: Rust (PyReadonlyArray1<f64>, PyReadonlyArray1<f64>) → pyi (f64, f64 →
+    float) → spec (1D float64, 1D float64). AGREE.
+  - mx_my_compare_rust: Rust → Vec<Vec<usize>> → pyi list[list[int]] → spec List[List[int]]. AGREE.
+
+  Memory/layout: PyReadonlyArray enforces C-contiguous layout. No Rust function retains
+  Python buffer references after return. GIL is held throughout (no py.allow_threads).
+  Spec ffi_notes specify GIL held — compliant.
+
+  Cross-layer numerical tests: tests/test_rust_internal.py provides known-answer tests
+  with np.testing.assert_array_equal for count_compare_rust and mx_my_compare_rust, and
+  pytest.approx for sup_dist_c_rust. Inputs use exact spec types (np.int32, np.float64).
+
+  Build freshness: src/lib.rs last modified before maturin develop was run. FRESH.
+
+━━━ MUTATION TESTING — PYTHON ━━━
+  Scope          : src/imputemulti/
+  Mutation score : NOT DETERMINED
+  Killed / Total : 0 / N (all mutants: "not checked")
+  Survived       : N/A
+
+  Finding: mutmut v3.5.0 ran but all mutants are marked "not checked". This is caused
+  by the 8 failing tests — mutmut uses the test suite to classify mutants, and a
+  failing baseline renders the suite unusable for mutation scoring. Mutation score
+  cannot be determined until all tests pass. This is a downstream consequence of the
+  BLOCKING test failures above, not an independent mutation finding.
+
+━━━ MUTATION TESTING — RUST ━━━
+  Scope          : src/
+  cargo-mutants  : NOT INSTALLED — Rust mutation testing skipped.
+  Finding        : cargo-mutants binary not found. Rust mutation score cannot be
+                   determined. This is an environment setup gap, not an Actor defect.
+  Type           : ADVISORY
+
+━━━ COVERAGE — PYTHON ━━━
+  Line coverage   : 78.20%  (threshold: 85%) — BELOW THRESHOLD
+  Branch coverage : not separately measured
+  Uncovered lines :
+    algorithms.py : 136 (continue branch — no-match E-step), 191-193 (max_iter reached
+                    with conj_prior), 229-302 (entire multinomial_data_aug function),
+                    358 (DA method branch in multinomial_impute), 384 (continue branch
+                    in imputation loop)
+    priors.py     : 54, 83-85, 106, 108-110
+
+  Root cause: multinomial_data_aug is completely uncovered (lines 229-302) because all
+  tests that call it fail before reaching the function, due to the z_Os_y typo.
+
+━━━ PERFORMANCE ━━━
+  Budget           : none specified
+  Benchmark result : 3 pytest-benchmark tests PASS (timing only)
+  Eye-check        : Rust implementations are O(N*M) nested loops. For the test dataset
+                     (10000 rows × 5 cols, 100 x-patterns): count_compare ~197ms,
+                     mx_my_compare ~2040ms. No Python/R baseline for comparison.
+
+━━━ ESCALATIONS ━━━
+  1 finding requires human or architectural judgment:
+
+  1. Acceptance criterion "Performance benchmarks show Rust implementation is at least 1.5x
+     faster than R/C++ for core kernels" — no R/C++ baseline value exists in this codebase.
+     The R package (imputeMulti/) is in a sibling directory but profiling it requires R
+     installation and cross-language timing infrastructure.
+     Recommended action: Either (a) provide a pure-Python reference implementation of
+     count_compare and mx_my_compare in the benchmark test and assert a ≥1.5x speedup
+     ratio, or (b) hardcode a documented R baseline time (from a prior measurement) and
+     assert the Rust time is ≤ baseline/1.5. Option (a) is Actor-actionable; option (b)
+     requires the human to supply the R reference timing.
+
+━━━ VERDICT RATIONALE ━━━
+The "Ruff and Mypy checks pass with no errors" criterion is now fully MET — this is the
+Actor's primary achievement in round 2. However, two other F-401 criteria remain unmet.
+Coverage is 78.2% vs the 85% threshold because 8 tests fail: 5 due to a typo in test
+fixtures (output="z_Os_y" instead of "z_os_y"), and 3 due to a missing pyarrow dependency
+not declared in pyproject.toml. These failures also render mutation testing non-operational.
+Both failures are purely mechanical and Actor-actionable.
+
+━━━ REQUIRED ACTIONS FOR PASS ━━━
+1. In tests/test_algorithms_rigorous.py, replace all 5 occurrences of
+   output="z_Os_y" with output="z_os_y" (all lowercase). Lines: 36, 79, 103, 122, 145.
+
+2. Add "pyarrow" to the dependencies list in pyproject.toml (under [project] dependencies).
+   Run `uv pip install pyarrow` to confirm the 3 tests in test_algorithms.py and
+   test_priors.py then pass.
+
+3. In tests/test_algorithms_rigorous.py::test_multinomial_em_edge_empty (line 105-106),
+   replace the weak assertion `assert res.mle_iter >= 0` with at minimum:
+   - assert res.method == "EM"
+   - np.testing.assert_allclose(res.mle_x_y['theta_y'].sum(), 1.0, atol=1e-6)
+
+4. Re-run full pytest suite after (1)-(3) and verify coverage reaches ≥85%.
+
+[ADVISORY:]
+A1. For the performance benchmark criterion — add a pure-Python reference implementation
+    of at least one core kernel (e.g., count_compare) to the benchmark test and assert
+    a speedup ratio ≥ 1.5x. This makes the criterion verifiable without R installation.
+    Without this, the criterion can only be marked BRITTLE.
+A2. Install cargo-mutants (`cargo install cargo-mutants`) to enable Rust mutation scoring
+    for the next round of Judge evaluation.
