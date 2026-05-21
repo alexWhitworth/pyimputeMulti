@@ -13,10 +13,10 @@ Add these sections to your `pyproject.toml` to standardize coverage behavior acr
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # Automatically include coverage flags when running pytest
-addopts = "--cov=pysynthACS --cov-report=xml --cov-report=term-missing"
+addopts = "--cov=imputemulti --cov-report=xml --cov-report=term-missing"
 
 [tool.coverage.run]
-source = ["src/pysynthACS"]
+source = ["src/imputemulti"]
 omit = [
     "tests/*",
     "**/__init__.py",
@@ -73,7 +73,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: alexWhitworth/pysynthACS
+          slug: alexWhitworth/pyimputemulti
           file: ./coverage.xml
           fail_ci_if_error: true
 ```

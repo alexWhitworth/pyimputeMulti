@@ -1,6 +1,6 @@
 [project]
 name = "imputemulti"
-version = "0.4.0"
+version = "0.5.0"
 description = "Multivariate Multinomial Data Imputation"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -8,6 +8,7 @@ dependencies = [
     "pandas",
     "numpy",
     "pytest-benchmark",
+    "pytest-cov",
     "pyarrow",
 ]
 
