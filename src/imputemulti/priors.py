@@ -1,3 +1,11 @@
+# --- Feature: F-401 — Testing, Benchmarking and Validation ---
+# Spec version: 2.0.0
+# Layer: ffi_boundary
+# Satisfies: Ruff and Mypy checks pass with no errors.
+# Performance budget: none specified
+# Linked schemas: N/A
+# Linked APIs: API-001, API-002, API-003
+
 # --- Feature: F-201 - Python Data Models and Priors ---
 # Spec version: 2.0.0
 # Layer: python

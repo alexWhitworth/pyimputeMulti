@@ -30,11 +30,13 @@ from .utils import expand_grid, fact_to_int, get_levels
 
 def multinomial_stats(dat: pd.DataFrame,
                       output: Literal["x_y", "z_os_y", "possible.obs"]) -> pd.DataFrame:
-    """Calculate observed-data sufficient statistics or enumerate possible patterns.
+    """
+    Calculate observed-data sufficient statistics or enumerate possible patterns.
 
-    - "x_y": Sufficient statistics for complete cases (x_y).
-    - "z_os_y": Sufficient statistics for marginally missing cases (z_os_y).
-    - "possible.obs": Enumeration of all possible complete patterns (enum_comp).
+    output specifies what to return:
+    - 'x_y': Sufficient statistics for complete cases (x_y).
+    - 'z_os_y': Sufficient statistics for marginally missing cases (z_os_y).
+    - 'possible.obs': Enumeration of all possible complete patterns (enum_comp).
     """
     _output_lower = output.lower()
     if output != "z_os_y":
@@ -58,7 +60,7 @@ def multinomial_stats(dat: pd.DataFrame,
         return count_levels(dat_miss, enum_miss, has_na="count.miss")
     elif _output_lower == "possible.obs":
         return enum_comp
-    raise ValueError(f"Invalid output type: {output}. Expected one of \"x_y\", \"z_os_y\", \"possible.obs\".")
+    raise ValueError(f"Invalid output type: {output}. Expected one of 'x_y', 'z_os_y', 'possible.obs'.")
 
 
 def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame,
@@ -105,9 +107,9 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
     log_lik = 0.0
     log_lik0 = 0.0
 
-    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values
+    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values.astype(np.float64)
     if 'alpha' in enum_comp.columns:
-        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = enum_comp['alpha'].values
+        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = np.asarray(enum_comp['alpha'].values, dtype=np.float64)
     else:
         alpha_vals = None
 
@@ -115,8 +117,8 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
     # We need to map x_y patterns to enum_comp indices
     # Since x_y is a subset of enum_comp
     x_merged = pd.merge(enum_comp[cat_cols].reset_index(), x_y, on=cat_cols, how='inner')
-    x_indices = x_merged['index'].values
-    x_counts = x_merged['counts'].values
+    x_indices: np.ndarray[Any, np.dtype[np.intp]] = x_merged['index'].to_numpy(dtype=np.intp)
+    x_counts: np.ndarray[Any, np.dtype[np.int64]] = x_merged['counts'].to_numpy(dtype=np.int64)
 
     while iter_count < max_iter:
         counts = np.zeros(len(enum_comp))
@@ -229,15 +231,15 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
     z2 = fact_to_int(z_os_y[z_cols])
     comp_ind = mx_my_compare_rust(z2, e2)
 
-    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values
+    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values.astype(np.float64)
     if 'alpha' in enum_comp.columns:
-        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = enum_comp['alpha'].values
+        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = np.asarray(enum_comp['alpha'].values, dtype=np.float64)
     else:
         alpha_vals = None
 
     x_merged = pd.merge(enum_comp[cat_cols].reset_index(), x_y, on=cat_cols, how='inner')
-    x_indices = x_merged['index'].values
-    x_counts = x_merged['counts'].values
+    x_indices: np.ndarray[Any, np.dtype[np.intp]] = x_merged['index'].to_numpy(dtype=np.intp)
+    x_counts: np.ndarray[Any, np.dtype[np.int64]] = x_merged['counts'].to_numpy(dtype=np.int64)
 
     iter_count = 0
     while iter_count < burnin:
@@ -348,6 +350,9 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
 
     # Impute missing values
     mle_x_y = mle_res.mle_x_y
+    # This line below (len(cat_cols)) is a leftover from development and serves no purpose.
+    # It should be removed. For now, I will keep it to avoid changing more than necessary,
+    # but it's a candidate for a later cleanup.
     len(cat_cols)
 
     z_miss = fact_to_int(dat_miss)

@@ -1,0 +1,81 @@
+=== ACTOR VERDICT REPORT ===
+Spec:           spec.json v2.0.0
+Feature:        F-401 — Testing, Benchmarking and Validation
+Layer:          python
+Evaluated:      2026-05-21TXX:XX:XXZ
+
+━━━ OVERALL VERDICT: [ FAIL ] ━━━
+
+━━━ ACCEPTANCE CRITERIA SCORECARD ━━━
+  ✅ MET      : 0 criteria (partial progress on MyPy compliance)
+  ⚠️  BRITTLE  : 0 criteria
+  ❌ UNMET    : 1 criterion (Ruff and Mypy checks pass with no errors.)
+
+━━━ IMPLEMENTATION PROGRESS ━━━
+MyPy error resolution has been an iterative process, with the following key changes implemented:
+
+**src/imputemulti/algorithms.py:**
+- Resolved `Name "output" already defined` in `multinomial_stats` by renaming to `_output_lower`.
+- Fixed `Missing return statement` by adding `ValueError` for unhandled output types in `multinomial_stats`.
+- Addressed `Function is missing a type annotation for one or more parameters` in `multinomial_impute` by explicitly defining `tol`, `max_iter`, `burnin`, and `post_draws` as parameters.
+- Added `Any` and `Tuple` to `typing` imports.
+- Added type assertions for `enum_comp` (`assert isinstance(_enum_comp_checked, pd.DataFrame)`).
+- Explicitly typed `theta_y` as `np.ndarray[Any, np.dtype[np.float64]]` and `alpha_vals` as `np.ndarray[Any, np.dtype[np.float64]] | None`.
+- Added `assert alpha_vals is not None` in relevant `M Step` blocks.
+- Modified assignments for `theta_y`, `alpha_vals`, `x_indices`, and `x_counts` to use `.to_numpy()` or `np.asarray()` with explicit dtypes (`np.float64`, `np.intp`, `np.int64`).
+- Corrected trailing syntax errors in `multinomial_impute`.
+
+**src/imputemulti/utils.py:**
+- Added `List` and `Tuple` to `typing` imports.
+- Refined type hint for `levels_dict` in `expand_grid` to `dict[str, list[str | int]]`.
+- Explicitly converted `levels_dict.keys()` to `list` in `expand_grid`.
+- Refined type hint for `codes` in `fact_to_int` to `np.ndarray[tuple[Any, ...], np.dtype[np.int32]]` and ensured explicit `np.asarray` conversion.
+
+━━━ REMAINING ISSUES ━━━
+The latest MyPy run still reports 11 errors in `src/imputemulti/algorithms.py`, primarily categorized as:
+
+- `Incompatible types in assignment` for `theta_y`, `alpha_vals`, `x_indices`, and `x_counts` when assigning from pandas Series or DataFrame columns, despite explicit casting. MyPy struggles with the exact type of the Series/DataFrame values.
+- `Unsupported operand types for <` for `int` and `None` when `alpha_vals` is potentially `None` in conditional checks (`(alpha_vals > 0)`).
+- `Value of type ... is not indexable` when `alpha_vals` (which can be `None`) is indexed.
+- `No overload variant of "__add__" of "ndarray" matches argument type "None"` when `counts + alpha_vals` is performed, and `alpha_vals` is `None` in the DA section.
+- `Argument 1 to "argmax" has incompatible type` and `Invalid index type` for `_iLocIndexerFrame[DataFrame]` during imputation steps.
+
+These issues indicate that while explicit type hints have been added, MyPy's strict mode still finds ambiguities or inconsistencies, particularly with the interplay between pandas Series/DataFrame types and NumPy array types, and the optional nature of `alpha_vals`.
+
+━━━ TEST QUALITY — PYTHON ━━━
+  Not applicable for this feature as it focuses on type checking rather than functional changes.
+
+━━━ TEST QUALITY — RUST ━━━
+  Rust layer not applicable for this feature.
+
+━━━ FFI BOUNDARY AUDIT ━━━
+  Initial `import-not-found` errors for Rust modules were resolved by running `maturin develop`.
+
+━━━ MUTATION TESTING — PYTHON ━━━
+  Python mutation testing skipped per spec.
+
+━━━ MUTATION TESTING — RUST ━━━
+  Rust mutation testing skipped per spec.
+
+━━━ COVERAGE — PYTHON ━━━
+  Line coverage   : Not evaluated for this phase.
+
+━━━ PERFORMANCE ━━━
+  Budget           : none specified
+  Benchmark result : not tested
+  Eye-check        : consistent with budget
+
+━━━ ESCALATIONS ━━━
+  The persistent MyPy errors, despite detailed type annotations and explicit casting, suggest a deeper issue with MyPy's ability to precisely infer types in complex pandas/NumPy interactions, especially with optional types. This may require revisiting the overall type hinting strategy or considering a slight relaxation of MyPy rules for specific patterns if strict adherence proves intractable without compromising readability/idiomacy.
+
+━━━ VERDICT RATIONALE ━━━
+The feature "Ruff and Mypy checks pass with no errors" has not been met. While substantial progress has been made in clarifying type hints and addressing syntax issues, several critical MyPy errors related to `numpy/pandas Type Mismatches` and `None` handling persist. The agent has applied explicit type hints and runtime assertions, but MyPy still reports type incompatibilities.
+
+━━━ REQUIRED ACTIONS FOR PASS ━━━
+1. Further investigate the remaining 11 MyPy errors in `src/imputemulti/algorithms.py`. This may involve:
+    - More aggressive type narrowing for `alpha_vals` and `theta_y` where they are used in arithmetic or indexing operations, ensuring they are not `None`.
+    - Reviewing how pandas Series are converted to NumPy arrays and ensuring MyPy can correctly track the resulting types.
+    - Potentially introducing runtime type checks for complex types if MyPy's static analysis cannot be satisfied otherwise.
+
+[ADVISORY:]
+A1. Consider if certain complex pandas/NumPy interactions, where MyPy struggles, could benefit from a slight adjustment in strictness if a robust, type-safe solution remains elusive without significant code complexity.
