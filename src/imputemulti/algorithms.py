@@ -17,7 +17,7 @@
 # Linked APIs: API-001, API-002
 """Implementation of EM and DA algorithms for multivariate multinomial data."""
 
-from typing import Literal, Any, Tuple
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -60,7 +60,9 @@ def multinomial_stats(dat: pd.DataFrame,
         return count_levels(dat_miss, enum_miss, has_na="count.miss")
     elif _output_lower == "possible.obs":
         return enum_comp
-    raise ValueError(f"Invalid output type: {output}. Expected one of 'x_y', 'z_os_y', 'possible.obs'.")
+    raise ValueError(
+        f"Invalid output type: {output}. Expected one of 'x_y', 'z_os_y', 'possible.obs'."
+    )
 
 
 def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame,
@@ -107,9 +109,13 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
     log_lik = 0.0
     log_lik0 = 0.0
 
-    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values.astype(np.float64)
+    theta_y: np.ndarray[Any, np.dtype[np.float64]] = np.asarray(
+        enum_comp['theta_y'], dtype=np.float64
+    )
     if 'alpha' in enum_comp.columns:
-        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = np.asarray(enum_comp['alpha'].values, dtype=np.float64)
+        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = np.asarray(
+            enum_comp['alpha'], dtype=np.float64
+        )
     else:
         alpha_vals = None
 
@@ -163,6 +169,7 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
 
         if dist < tol or abs(log_lik - log_lik0) < tol * 100:
             if conj_prior != "none":
+                assert alpha_vals is not None
                 valid_alpha = (alpha_vals > 0) & (theta_y > 0)
                 log_lik += np.sum(alpha_vals[valid_alpha] * np.log(theta_y[valid_alpha]))
 
@@ -181,6 +188,7 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
 
     # If max_iter reached
     if conj_prior != "none":
+        assert alpha_vals is not None
         valid_alpha = (alpha_vals > 0) & (theta_y > 0)
         log_lik += np.sum(alpha_vals[valid_alpha] * np.log(theta_y[valid_alpha]))
 
@@ -231,9 +239,13 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
     z2 = fact_to_int(z_os_y[z_cols])
     comp_ind = mx_my_compare_rust(z2, e2)
 
-    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values.astype(np.float64)
+    theta_y: np.ndarray[Any, np.dtype[np.float64]] = np.asarray(
+        enum_comp['theta_y'], dtype=np.float64
+    )
     if 'alpha' in enum_comp.columns:
-        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = np.asarray(enum_comp['alpha'].values, dtype=np.float64)
+        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = np.asarray(
+            enum_comp['alpha'], dtype=np.float64
+        )
     else:
         alpha_vals = None
 
@@ -276,11 +288,13 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
     if conj_prior == "none":
         theta_post = np.random.dirichlet(counts + 1.0, size=post_draws)
     else:
+        assert alpha_vals is not None
         theta_post = np.random.dirichlet(counts + alpha_vals, size=post_draws)
 
     theta_y_final = theta_post.mean(axis=0)
 
     if conj_prior != "none":
+        assert alpha_vals is not None
         valid_alpha = (alpha_vals > 0) & (theta_y_final > 0)
         log_lik += np.sum(alpha_vals[valid_alpha] * np.log(theta_y_final[valid_alpha]))
 
@@ -360,7 +374,9 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
     marg_ind = mx_my_compare_rust(z_miss, e_comp)
 
     imputed_dat_miss = dat_miss.copy()
-    theta_vals = mle_x_y['theta_y'].values
+    theta_vals: np.ndarray[Any, np.dtype[np.float64]] = np.asarray(
+        mle_x_y['theta_y'], dtype=np.float64
+    )
 
     for i in range(len(dat_miss)):
         indices = marg_ind[i]
@@ -368,13 +384,14 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
             continue
 
         # Mode-based imputation as in R
-        best_idx = indices[np.argmax(theta_vals[indices])]
+        best_idx = indices[int(np.argmax(theta_vals[indices]))]
         mode_val = mle_x_y.iloc[best_idx]
 
         # Fill NAs
+        row_label = imputed_dat_miss.index[i]
         for col in cat_cols:
-            if pd.isna(imputed_dat_miss.iloc[i][col]):
-                imputed_dat_miss.iloc[i, imputed_dat_miss.columns.get_loc(col)] = mode_val[col]
+            if pd.isna(imputed_dat_miss.at[row_label, col]):
+                imputed_dat_miss.at[row_label, col] = mode_val[col]
 
     imputed_data = pd.concat([dat_comp, imputed_dat_miss]).sort_index()
 

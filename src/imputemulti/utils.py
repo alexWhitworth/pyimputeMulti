@@ -10,7 +10,7 @@
 
 import itertools
 import pathlib
-from typing import Any, List, Tuple
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -45,7 +45,9 @@ def fact_to_int(df: pd.DataFrame) -> np.ndarray[Any, np.dtype[np.int32]]:
 
         # codes are 0-indexed, R's are 1-indexed.
         # codes -1 represent NaN in pandas categorical.
-        codes: np.ndarray[tuple[Any, ...], np.dtype[np.int32]] = np.asarray(series.cat.codes.values, dtype=np.int32)
+        codes: np.ndarray[tuple[Any, ...], np.dtype[np.int32]] = np.asarray(
+            series.cat.codes.values, dtype=np.int32
+        )
         # Convert to 1-indexed and handle NaNs
         mask = codes == -1
         codes = (codes + 1).astype(np.int32)
