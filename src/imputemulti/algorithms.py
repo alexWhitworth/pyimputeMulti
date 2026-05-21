@@ -148,17 +148,19 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
 
         # M Step
         if conj_prior == "none":
-            theta_y1 = counts / n_obs
+            d = len(enum_comp)
+            theta_y1 = counts / n_obs if n_obs > 0 else np.full(d, 1.0 / d)
         else:
             d = len(enum_comp)
-            assert alpha_vals is not None # MyPy assertion: alpha_vals should not be None here
+            assert alpha_vals is not None
             alpha_0 = alpha_vals.sum()
             denominator = n_obs + alpha_0 - d
-            # Add a small epsilon to prevent division by zero or negative values
-            # in the denominator, ensuring numerical stability for probability estimates.
             epsilon = 1e-10
             safe_denominator = np.maximum(denominator, epsilon)
             theta_y1 = (counts + alpha_vals - 1) / safe_denominator
+            total = theta_y1.sum()
+            if total <= 0:
+                theta_y1 = alpha_vals / alpha_0
 
         iter_count += 1
         dist = sup_dist_c_rust(theta_y, theta_y1)
