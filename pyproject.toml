@@ -1,6 +1,6 @@
 [project]
 name = "imputemulti"
-version = "0.1.0"
+version = "0.4.0"
 description = "Multivariate Multinomial Data Imputation"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -62,7 +62,7 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 80
+fail_under = 85
 show_missing = true
 exclude_lines = [
     "pragma: no cover",
