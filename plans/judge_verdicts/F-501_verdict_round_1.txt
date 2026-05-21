@@ -1,0 +1,104 @@
+=== JUDGE EVALUATION REPORT ===
+Spec:           spec.json v2.0.0
+Feature:        F-501 — Code Coverage and CI Integration
+Layer:          python
+Evaluated:      2026-05-21T17:27:20Z
+
+━━━ OVERALL VERDICT: FAIL ━━━
+
+━━━ ACCEPTANCE CRITERIA SCORECARD ━━━
+  ✅ MET      : 1 criterion
+  ⚠️  BRITTLE  : 0 criteria
+  ❌ UNMET    : 3 criteria
+
+  Criterion : "pyproject.toml includes standardized coverage configuration."
+  Status    : MET
+  Evidence  : pyproject.toml — [tool.pytest.ini_options], [tool.coverage.run],
+              [tool.coverage.report] all present; pytest-cov in [project.dependencies].
+              Coverage threshold set to fail_under = 85 (above the spec's 80% minimum).
+              All 32 tests pass; total coverage 94.88%.
+
+  Criterion : "GitHub Actions workflow runs tests on every push to master and PR."
+  Status    : UNMET
+  Evidence  : No .github/ directory exists in the repository root.
+  Finding   : Zero GitHub Actions workflow files present. The CI layer is entirely absent.
+  Type      : BLOCKING
+
+  Criterion : "Coverage report (coverage.xml) is successfully uploaded to Codecov."
+  Status    : UNMET
+  Evidence  : No .github/workflows/*.yml exists; no codecov/codecov-action step present.
+  Finding   : Without a CI workflow, coverage.xml is never uploaded to Codecov.
+              coverage.xml is produced locally (confirmed present) but is gitignored and
+              never transmitted to any external service.
+  Type      : BLOCKING
+
+  Criterion : "CI fails if total coverage falls below 80%."
+  Status    : UNMET
+  Evidence  : pyproject.toml:fail_under = 85 enforces this locally only.
+              No CI job exists to enforce this gate on pushes or PRs.
+  Finding   : The coverage threshold is correctly configured in pyproject.toml, but
+              without a GitHub Actions workflow there is no CI gate to fail.
+  Type      : BLOCKING
+
+━━━ TEST QUALITY — PYTHON ━━━
+  Anti-patterns found: 0
+  Note: F-501 is infrastructure/CI configuration. Mutation testing skipped per spec.
+  The test_requirements entry ("Verify CI workflow execution and status reporting") is
+  unverifiable until the CI workflow itself exists.
+
+━━━ TEST QUALITY — RUST ━━━
+  cargo test: N/A — F-501 is Python/CI infrastructure layer. No Rust changes.
+  Rust unit tests present: N/A
+  Note: Rust mutation testing skipped per spec (rationale: infrastructure configuration).
+
+━━━ FFI BOUNDARY AUDIT ━━━
+  Not applicable — F-501 layer is "python" (CI infrastructure). No FFI boundary changes.
+
+━━━ MUTATION TESTING — PYTHON ━━━
+  Scope          : N/A (enabled: false per spec)
+  Status         : Python mutation testing skipped per spec.
+
+━━━ MUTATION TESTING — RUST ━━━
+  Scope          : N/A (enabled: false per spec)
+  Status         : Rust mutation testing skipped per spec.
+
+━━━ COVERAGE — PYTHON ━━━
+  Line coverage   : 94.88%  (threshold: 85%) ✅
+  Branch coverage : N/A (not separately measured)
+  Note: Coverage configuration is fully functional and passing locally.
+
+━━━ PERFORMANCE ━━━
+  Budget           : none specified
+  Benchmark result : not tested (infrastructure feature)
+
+━━━ VERDICT RATIONALE ━━━
+  F-501 has one of four acceptance criteria met: pyproject.toml contains correct and
+  standardized coverage configuration with pytest-cov as a declared dependency and a
+  fail_under = 85 threshold. The remaining three criteria all require a GitHub Actions
+  workflow file (.github/workflows/tests.yml or equivalent) that does not exist anywhere
+  in the repository. The CI layer is entirely absent — no workflow triggers on push/PR,
+  no Codecov upload step, no remote CI gate. The test_requirement ("Verify CI workflow
+  execution and status reporting") cannot be satisfied without the workflow file itself.
+
+━━━ REQUIRED ACTIONS FOR PASS ━━━
+  1. Create .github/workflows/tests.yml with:
+       - on: push: branches: [master] and on: pull_request: branches: [master]
+       - jobs.run-tests steps: actions/checkout@v4, setup-python (3.13),
+         dtolnay/rust-toolchain@stable, uv install, maturin develop, uv run pytest
+       - codecov/codecov-action@v4 step with file: ./coverage.xml and
+         fail_ci_if_error: true
+     Reference plan: plans/codecov_plan.md contains a draft template (note: it
+     references pysynthACS slug — must be corrected to the imputemulti repository).
+
+  2. Add CODECOV_TOKEN to GitHub repository secrets (documented action for repo owner;
+     Actor can add the secret reference in the workflow yaml as
+     ${{ secrets.CODECOV_TOKEN }} and document this setup requirement in README.md).
+
+  [ADVISORY:]
+  A1. The codecov-action slug in plans/codecov_plan.md references "alexWhitworth/pysynthACS"
+      — update to "alexWhitworth/pyimputeMulti" (or the correct GitHub repo slug) in the
+      workflow file to ensure Codecov associates coverage with the correct project.
+  A2. coverage.xml is correctly listed in .gitignore; confirm it is excluded from
+      the workflow's artifact upload (only Codecov upload is needed, not git commit).
+  A3. Consider pinning the codecov/codecov-action to a specific SHA for supply-chain
+      security (e.g., codecov/codecov-action@v4.0.0 rather than @v4).
