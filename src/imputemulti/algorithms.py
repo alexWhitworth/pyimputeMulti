@@ -1,3 +1,11 @@
+# --- Feature: F-401 — Testing, Benchmarking and Validation ---
+# Spec version: 2.0.0
+# Layer: ffi_boundary
+# Satisfies: Ruff and Mypy checks pass with no errors.
+# Performance budget: none specified
+# Linked schemas: N/A
+# Linked APIs: API-001, API-002, API-003
+
 # --- Feature: F-202 - EM and DA Algorithms ---
 # Spec version: 2.0.0
 # Layer: python
@@ -9,7 +17,7 @@
 # Linked APIs: API-001, API-002
 """Implementation of EM and DA algorithms for multivariate multinomial data."""
 
-from typing import Literal
+from typing import Literal, Any, Tuple
 
 import numpy as np
 import pandas as pd
@@ -28,7 +36,7 @@ def multinomial_stats(dat: pd.DataFrame,
     - "z_os_y": Sufficient statistics for marginally missing cases (z_os_y).
     - "possible.obs": Enumeration of all possible complete patterns (enum_comp).
     """
-    output: Literal["x_y", "z_os_y", "possible.obs"] = output.lower()
+    _output_lower = output.lower()
     if output != "z_os_y":
         levels = get_levels(dat)
         enum_comp = expand_grid(levels)
@@ -48,8 +56,9 @@ def multinomial_stats(dat: pd.DataFrame,
     elif output == "z_os_y":
         dat_miss = dat[dat.isna().any(axis=1)]
         return count_levels(dat_miss, enum_miss, has_na="count.miss")
-    elif output == "possible.obs":
+    elif _output_lower == "possible.obs":
         return enum_comp
+    raise ValueError(f"Invalid output type: {output}. Expected one of \"x_y\", \"z_os_y\", \"possible.obs\".")
 
 
 def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFrame,
@@ -76,9 +85,11 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
 
     """
     # 01. Setup prior and initial theta_y
-    enum_comp = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'),
-                            conj_prior=conj_prior, alpha=alpha, verbose=verbose,
-                            outer=False, enum_comp=enum_comp)
+    _enum_comp_checked = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'),
+                                     conj_prior=conj_prior, alpha=alpha, verbose=verbose,
+                                     outer=False, enum_comp=enum_comp)
+    assert isinstance(_enum_comp_checked, pd.DataFrame)
+    enum_comp = _enum_comp_checked
 
     # pattern match marginally missing to complete
     # Use only the categorical columns for matching
@@ -94,9 +105,9 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
     log_lik = 0.0
     log_lik0 = 0.0
 
-    theta_y = enum_comp['theta_y'].values
+    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values
     if 'alpha' in enum_comp.columns:
-        alpha_vals = enum_comp['alpha'].values
+        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = enum_comp['alpha'].values
     else:
         alpha_vals = None
 
@@ -132,6 +143,7 @@ def multinomial_em(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.DataFr
             theta_y1 = counts / n_obs
         else:
             d = len(enum_comp)
+            assert alpha_vals is not None # MyPy assertion: alpha_vals should not be None here
             alpha_0 = alpha_vals.sum()
             denominator = n_obs + alpha_0 - d
             # Add a small epsilon to prevent division by zero or negative values
@@ -204,9 +216,11 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
         ModImputeMultiResult containing the results of the data augmentation algorithm.
 
     """
-    enum_comp = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'),
-                            conj_prior=conj_prior, alpha=alpha, verbose=verbose,
-                            outer=False, enum_comp=enum_comp)
+    _enum_comp_checked = check_prior(dat=x_y.drop(columns=['counts'], errors='ignore'),
+                                     conj_prior=conj_prior, alpha=alpha, verbose=verbose,
+                                     outer=False, enum_comp=enum_comp)
+    assert isinstance(_enum_comp_checked, pd.DataFrame)
+    enum_comp = _enum_comp_checked
 
     cat_cols = [col for col in enum_comp.columns if col not in ['alpha', 'theta_y', 'counts']]
     z_cols = [col for col in z_os_y.columns if col != 'counts']
@@ -215,9 +229,9 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
     z2 = fact_to_int(z_os_y[z_cols])
     comp_ind = mx_my_compare_rust(z2, e2)
 
-    theta_y = enum_comp['theta_y'].values
+    theta_y: np.ndarray[Any, np.dtype[np.float64]] = enum_comp['theta_y'].values
     if 'alpha' in enum_comp.columns:
-        alpha_vals = enum_comp['alpha'].values
+        alpha_vals: np.ndarray[Any, np.dtype[np.float64]] | None = enum_comp['alpha'].values
     else:
         alpha_vals = None
 
@@ -249,6 +263,7 @@ def multinomial_data_aug(x_y: pd.DataFrame, z_os_y: pd.DataFrame, enum_comp: pd.
         if conj_prior == "none":
             theta_y = np.random.dirichlet(counts + 1.0)
         else:
+            assert alpha_vals is not None # MyPy assertion: alpha_vals should not be None here
             theta_y = np.random.dirichlet(counts + alpha_vals)
 
         iter_count += 1
@@ -282,7 +297,8 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
                        conj_prior: Literal["none", "data.dep", "flat.prior",
                                             "non.informative"] = "none",
                        alpha: float | pd.DataFrame | None = None, verbose: bool = False,
-                       **kwargs) -> ImputeMultiResult:
+                       tol: float = 5e-7, max_iter: int = 10000,
+                       burnin: int = 100, post_draws: int = 1000) -> ImputeMultiResult:
     """Impute missing values for multivariate multinomial data.
 
     Args:
@@ -321,11 +337,11 @@ def multinomial_impute(dat: pd.DataFrame, method: Literal["EM", "DA"] = "EM",
     if method == "EM":
         mle_res = multinomial_em(x_y, z_os_y, enum_comp, n_obs=len(dat),
                                  conj_prior=conj_prior, alpha=alpha_final, verbose=verbose,
-                                 **kwargs)
+                                 tol=tol, max_iter=max_iter)
     else:
         mle_res = multinomial_data_aug(x_y, z_os_y, enum_comp, n_obs=len(dat),
                                        conj_prior=conj_prior, alpha=alpha_final, verbose=verbose,
-                                       **kwargs)
+                                       burnin=burnin, post_draws=post_draws)
 
     if verbose:
         print("Imputing missing observations via MLE results.")

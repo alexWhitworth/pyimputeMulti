@@ -10,7 +10,7 @@
 
 import itertools
 import pathlib
-from typing import Any
+from typing import Any, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -22,9 +22,9 @@ def load_tract2221() -> pd.DataFrame:
     return pd.read_parquet(path)
 
 
-def expand_grid(levels_dict: dict[str, list[Any]]) -> pd.DataFrame:
+def expand_grid(levels_dict: dict[str, list[str | int]]) -> pd.DataFrame:
     """Perform a Python equivalent of R's expand.grid."""
-    keys = levels_dict.keys()
+    keys = list(levels_dict.keys())
     values = levels_dict.values()
     grid = list(itertools.product(*values))
     return pd.DataFrame(grid, columns=keys)
@@ -45,10 +45,10 @@ def fact_to_int(df: pd.DataFrame) -> np.ndarray[Any, np.dtype[np.int32]]:
 
         # codes are 0-indexed, R's are 1-indexed.
         # codes -1 represent NaN in pandas categorical.
-        codes = series.cat.codes.values.astype(np.int32)
+        codes: np.ndarray[tuple[Any, ...], np.dtype[np.int32]] = np.asarray(series.cat.codes.values, dtype=np.int32)
         # Convert to 1-indexed and handle NaNs
         mask = codes == -1
-        codes = codes + 1
+        codes = (codes + 1).astype(np.int32)
         codes[mask] = na_val
         out[:, i] = codes
 
