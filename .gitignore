@@ -35,6 +35,7 @@ target/
 
 # Environment variables
 .env
+.claude
 
 # Project specific
 # *.parquet

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+import numpy.testing as npt
 
 from imputemulti.algorithms import (
     multinomial_data_aug,
@@ -33,9 +34,9 @@ def test_multinomial_em_synthetic():
     n_obs = len(df)
 
     x_y = multinomial_stats(df, output="x_y")
-    z_Os_y = multinomial_stats(df, output="z_Os_y")
+    z_os_y = multinomial_stats(df, output="z_os_y")
 
-    res = multinomial_em(x_y, z_Os_y, enum_comp, n_obs, conj_prior="none", tol=1e-10)
+    res = multinomial_em(x_y, z_os_y, enum_comp, n_obs, conj_prior="none", tol=1e-10)
 
     mle = res.mle_x_y
     # Find (0,0)
@@ -76,10 +77,10 @@ def test_multinomial_da_synthetic():
     n_obs = len(df)
 
     x_y = multinomial_stats(df, output="x_y")
-    z_Os_y = multinomial_stats(df, output="z_Os_y")
+    z_os_y = multinomial_stats(df, output="z_os_y")
 
     # Use many draws for stability
-    res = multinomial_data_aug(x_y, z_Os_y, enum_comp, n_obs,
+    res = multinomial_data_aug(x_y, z_os_y, enum_comp, n_obs,
                                conj_prior="none", burnin=100, post_draws=1000)
 
     mle = res.mle_x_y
@@ -100,10 +101,12 @@ def test_multinomial_em_edge_empty():
     # Should handle empty input gracefully
     # This might require some defensive coding in multinomial_stats
     x_y = multinomial_stats(df, output="x_y")
-    z_Os_y = multinomial_stats(df, output="z_Os_y")
+    z_os_y = multinomial_stats(df, output="z_os_y")
 
-    res = multinomial_em(x_y, z_Os_y, enum_comp, n_obs=0, conj_prior="non.informative")
-    assert res.mle_iter >= 0
+    res = multinomial_em(x_y, z_os_y, enum_comp, n_obs=0, conj_prior="non.informative")
+    assert res.mle_iter >= 1
+    assert res.method == "EM"
+    npt.assert_allclose(res.mle_x_y['theta_y'].sum(), 1.0, atol=1e-6)
 
 def test_multinomial_em_conj_prior_and_verbose():
     """
@@ -119,10 +122,10 @@ def test_multinomial_em_conj_prior_and_verbose():
     n_obs = len(df)
 
     x_y = multinomial_stats(df, output="x_y")
-    z_Os_y = multinomial_stats(df, output="z_Os_y")
+    z_os_y = multinomial_stats(df, output="z_os_y")
 
     # Use non.informative prior and verbose=True
-    res = multinomial_em(x_y, z_Os_y, enum_comp, n_obs, conj_prior="non.informative", tol=1e-10, verbose=True)
+    res = multinomial_em(x_y, z_os_y, enum_comp, n_obs, conj_prior="non.informative", tol=1e-10, verbose=True)
 
     assert res.method == "EM"
     assert res.mle_cp == "non.informative"
@@ -143,10 +146,10 @@ def test_multinomial_data_aug_conj_prior_and_verbose():
     n_obs = len(df)
 
     x_y = multinomial_stats(df, output="x_y")
-    z_Os_y = multinomial_stats(df, output="z_Os_y")
+    z_os_y = multinomial_stats(df, output="z_os_y")
 
     # Use non.informative prior and verbose=True
-    res = multinomial_data_aug(x_y, z_Os_y, enum_comp, n_obs,
+    res = multinomial_data_aug(x_y, z_os_y, enum_comp, n_obs,
                                conj_prior="non.informative", burnin=5, post_draws=10, verbose=True)
 
     assert res.method == "DA"
