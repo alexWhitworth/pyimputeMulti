@@ -53,6 +53,9 @@ reformat_tables.py
 mutants/
 .benchmarks/
 
+# r-benchmark comparison
+bench/
+
 # coverage
 coverage/
 coverage.xml

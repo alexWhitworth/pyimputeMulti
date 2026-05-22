@@ -9,11 +9,13 @@ A Python library for multivariate multinomial data imputation using Expectation-
     - Data Augmentation (DA) algorithm.
 - **Priors**: Conjugate priors (Dirichlet) and data-dependent priors.
 - **Performance**: High-performance Rust implementation for core counting and comparison functions.
+    - Benchmarking: 10x - 100x faster than the original R/C++ implementation
 
 ## Installation
 
 - From Github: `pip install git+https://github.com/alexwhitworth/pyimputeMulti.git`
-- From PyPI: (coming soon)
+- From [PyPI](https://pypi.org/project/imputemulti): `pip install imputemulti`
+
 
 ## Usage
 ```python
@@ -45,7 +47,7 @@ da_imputed_df = da_result.data[1]
 
 ## Citation
 
-If you use `pyimputeMulti` in your work, please cite the following:
+If you use `imputeMulti` in your work, please cite the following:
 
 ```bibtex
 @Manual{imputemulti_py,
