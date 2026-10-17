@@ -1,7 +1,7 @@
 import numpy as np
+import numpy.testing as npt
 import pandas as pd
 import pytest
-import numpy.testing as npt
 
 from imputemulti.algorithms import (
     multinomial_data_aug,
@@ -125,7 +125,9 @@ def test_multinomial_em_conj_prior_and_verbose():
     z_os_y = multinomial_stats(df, output="z_os_y")
 
     # Use non.informative prior and verbose=True
-    res = multinomial_em(x_y, z_os_y, enum_comp, n_obs, conj_prior="non.informative", tol=1e-10, verbose=True)
+    res = multinomial_em(
+        x_y, z_os_y, enum_comp, n_obs, conj_prior="non.informative", tol=1e-10, verbose=True
+    )
 
     assert res.method == "EM"
     assert res.mle_cp == "non.informative"

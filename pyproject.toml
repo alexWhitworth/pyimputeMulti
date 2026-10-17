@@ -13,6 +13,15 @@ dependencies = [
     "pyarrow",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "diff-cover>=9",
+    "pandas-stubs",
+]
+
 [build-system]
 requires = ["maturin>=1.5,<2.0"]
 build-backend = "maturin"

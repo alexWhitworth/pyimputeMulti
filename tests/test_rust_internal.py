@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from imputemulti._internal_rust import count_compare_rust, mx_my_compare_rust, sup_dist_c_rust
 
 
@@ -21,9 +22,9 @@ def test_count_compare_rust_no_na():
 
 def test_count_compare_rust_count_obs():
     # NA_INTEGER is i32::MIN
-    NA = np.int32(-2147483648)
+    na = np.int32(-2147483648)
     x = np.array([[1, 2], [3, 4]], dtype=np.int32)
-    dat = np.array([[1, NA], [3, 4], [NA, 2]], dtype=np.int32)
+    dat = np.array([[1, na], [3, 4], [na, 2]], dtype=np.int32)
     # [1, NA] matches [1, 2]
     # [3, 4] matches [3, 4]
     # [NA, 2] matches [1, 2]
@@ -35,8 +36,8 @@ def test_count_compare_rust_count_obs():
     np.testing.assert_array_equal(counts, [2, 1])
 
 def test_mx_my_compare_rust():
-    NA = np.int32(-2147483648)
-    mat_x = np.array([[1, NA], [3, 4]], dtype=np.int32)
+    na = np.int32(-2147483648)
+    mat_x = np.array([[1, na], [3, 4]], dtype=np.int32)
     mat_y = np.array([[1, 2], [3, 4], [1, 5]], dtype=np.int32)
     # Row 0 of mat_x: [1, NA] matches row 0 and 2 of mat_y
     # Row 1 of mat_x: [3, 4] matches row 1 of mat_y
