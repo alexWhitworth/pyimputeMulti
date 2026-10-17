@@ -39,7 +39,7 @@ def test_priors_additional_coverage():
         check_prior(df, outer=False, enum_comp=None)
 
     # data.dep inner error paths
-    with pytest.raises(ValueError, match="alpha must be a DataFrame for data.dep prior"):
+    with pytest.raises(ValueError, match=r"alpha must be a DataFrame for data.dep prior"):
         check_prior(df, conj_prior="data.dep", alpha=1.0, outer=False, enum_comp=enum)
 
     alpha_bad_len = alpha.iloc[:2]

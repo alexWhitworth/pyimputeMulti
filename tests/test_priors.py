@@ -7,7 +7,7 @@ from imputemulti.priors import check_prior, count_levels, data_dep_prior_multi
 # --- Feature: F-201 — Python Data Models and Priors ---
 # Spec version: 1.1.0
 # Layer: python
-# Satisfies: data_dep_prior_multi produces alpha values consistent with R implementation for tract2221.
+# Satisfies: data_dep_prior_multi alpha values are consistent with the R implementation.
 
 def test_count_levels_no_na():
     """
@@ -51,7 +51,7 @@ def test_check_prior_flat():
     res = check_prior(dat, conj_prior="flat.prior", alpha=2.0, outer=True)
     assert res == 2.0
 
-    with pytest.raises(ValueError, match="Flat priors must be supplied as a scalar."):
+    with pytest.raises(ValueError, match=r"Flat priors must be supplied as a scalar."):
         check_prior(dat, conj_prior="flat.prior", alpha="bad", outer=True)
 
 def test_check_prior_non_informative():
@@ -107,8 +107,10 @@ def test_check_prior_data_dep_alpha_type_mismatch_outer_false():
     """
     dat = pd.DataFrame({'A': [1], 'B': [2]})
     enum_comp = pd.DataFrame({'A': [1], 'B': [2]})
-    with pytest.raises(ValueError, match="alpha must be a DataFrame for data.dep prior"):
-        check_prior(dat, conj_prior="data.dep", alpha=1.0, verbose=False, outer=False, enum_comp=enum_comp)
+    with pytest.raises(ValueError, match=r"alpha must be a DataFrame for data.dep prior"):
+        check_prior(
+            dat, conj_prior="data.dep", alpha=1.0, verbose=False, outer=False, enum_comp=enum_comp
+        )
 
 
 def test_check_prior_data_dep_alpha_len_mismatch_outer_false():
@@ -119,5 +121,12 @@ def test_check_prior_data_dep_alpha_len_mismatch_outer_false():
     dat = pd.DataFrame({'A': [1], 'B': [2]})
     enum_comp = pd.DataFrame({'A': [1, 2], 'B': [2, 3]})
     alpha_mismatch = pd.DataFrame({'A': [1], 'B': [2], 'alpha': [1.0]})
-    with pytest.raises(ValueError, match="len\\(alpha\\) must match len\\(enum_comp\\)"):
-        check_prior(dat, conj_prior="data.dep", alpha=alpha_mismatch, verbose=False, outer=False, enum_comp=enum_comp)
+    with pytest.raises(ValueError, match=r"len\(alpha\) must match len\(enum_comp\)"):
+        check_prior(
+            dat,
+            conj_prior="data.dep",
+            alpha=alpha_mismatch,
+            verbose=False,
+            outer=False,
+            enum_comp=enum_comp,
+        )

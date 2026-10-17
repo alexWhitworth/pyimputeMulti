@@ -1,16 +1,16 @@
 # --- Feature: F-401 — Testing, Benchmarking and Validation ---
 # Spec version: 2.0.0
 # Layer: ffi_boundary
-# Satisfies: Performance benchmarks show Rust implementation is at least 1.5x faster than R/C++ for core kernels.
+# Satisfies: Rust core kernels are at least 1.5x faster than R/C++ equivalents.
 # Performance budget: none specified
 # Linked schemas: N/A
 # Linked APIs: API-001, API-002, API-003
 
 import numpy as np
-import pandas as pd
 import pytest
 
-from imputemulti._internal_rust import count_compare_rust, sup_dist_c_rust, mx_my_compare_rust
+from imputemulti._internal_rust import count_compare_rust, mx_my_compare_rust, sup_dist_c_rust
+
 
 @pytest.fixture(scope="module")
 def sample_data():
@@ -21,29 +21,31 @@ def sample_data():
     n_rows = 10000
     n_cols = 5
     n_levels = 5 # Number of unique categories per column
-    
+
     # Generate data with some missing values
     data = np.random.randint(0, n_levels, size=(n_rows, n_cols), dtype=np.int32)
-    
+
     # Introduce NaNs as -1 for Rust compatibility
     num_nan = n_rows // 10 # 10% missing
     nan_indices = np.random.choice(n_rows * n_cols, num_nan, replace=False)
-    data.flat[nan_indices] = -1 
-    
+    data.flat[nan_indices] = -1
+
     # Create x and dat for count_compare_rust
     x_rows = 100
     x_cols = n_cols
     x = np.random.randint(0, n_levels, size=(x_rows, x_cols), dtype=np.int32)
-    
+
     # has_na for count_compare_rust
     has_na_flag = "no" # Assuming no NA's in x for now for simpler benchmarking
-    
+
     # For mx_my_compare_rust: generate mat_y (complete patterns)
     # A smaller set of unique complete patterns
     mat_y_rows = 500
     mat_y_cols = n_cols
-    mat_y = np.unique(np.random.randint(0, n_levels, size=(mat_y_rows, mat_y_cols), dtype=np.int32), axis=0)
-    
+    mat_y = np.unique(
+        np.random.randint(0, n_levels, size=(mat_y_rows, mat_y_cols), dtype=np.int32), axis=0
+    )
+
     # For sup_dist_c_rust
     vec_len = 100
     vec1 = np.random.rand(vec_len)
